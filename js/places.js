@@ -44,7 +44,7 @@ const PLACES = [
   { n: "Urdeio", cat: "region", x: 3390, y: 2105, k: "Pireaynea", d: "Eastern region of Pireaynea, toward the Lower Gherci." },
   { n: "Aseraga", cat: "region", x: 2520, y: 2215, k: "Pireaynea", d: "Southwestern region of Pireaynea." },
   { n: "Feacener", cat: "region", x: 2920, y: 2425, k: "Pireaynea", d: "Southern coastal region of Pireaynea." },
-  { n: "Coelys", cat: "city", x: 3125, y: 1605, k: "Coelum", d: "In the Kingdom of Coelum, about 950 mi southwest of Atriki, near Ezon and Croco. As labeled on the Pireaynea map — canon names this northern kingdom Coelum." },
+  { n: "Coelys", cat: "town", x: 3125, y: 1605, k: "Gherci", d: "In the Kingdom of Gherci, about 875 mi northwest of Tarmet, near Ezon and Croco. A town in Gherci (not to be confused with the northern kingdom of Coelum)." },
   { n: "Rietha", cat: "city", x: 3670, y: 1660, k: "Gherci", d: "In the Kingdom of Gherci, about 475 mi northwest of Tarmet, near Nyes and Kessa." },
   { n: "Kessa", cat: "city", x: 3715, y: 1775, k: "Gherci", d: "In the Kingdom of Gherci, about 400 mi northwest of Tarmet, near Rietha and Belune." },
   { n: "Loria", cat: "city", x: 5040, y: 2180, k: "Gherci", d: "In the Kingdom of Gherci, about 725 mi east of Tarmet, near Lethe and Maru." },
