@@ -25,7 +25,7 @@ and it will be live at your Pages URL.
 - **Three switchable layers**, aligned to one coordinate space:
   - *Atlas* — the labeled political/terrain map
   - *Heightmap* — elevation render
-  - *Population* — settlement-density dot map
+  - *Precipitation* — rainfall map (blue dots mark how much rain each area gets)
 - **Compare mode** — blend a second layer over the base with an opacity slider.
 - **~425 searchable places** — the six kingdoms and their capitals, regions,
   cities & ports, towns, seas & lakes, rivers, islands, forests, sacred

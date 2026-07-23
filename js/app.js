@@ -61,7 +61,7 @@
   function xyOf(latlng) { return { x: latlng.lng, y: H - latlng.lat }; }
 
   var atlasBounds = [ll(0, H), ll(W, 0)];
-  // Population export shows the same viewport rendered full-bleed at a
+  // Precipitation export shows the same viewport rendered full-bleed at a
   // different zoom; bounds below register it onto the atlas space
   // (alignment computed by cross-correlating landmass silhouettes).
   var popBounds = [ll(63.7, 3956.7), ll(7675.2, 0)];
@@ -69,7 +69,7 @@
   var layers = {
     atlas: L.imageOverlay("assets/atlas.jpg", atlasBounds),
     height: L.imageOverlay("assets/height.jpg", atlasBounds),
-    population: L.imageOverlay("assets/population.jpg", popBounds)
+    precipitation: L.imageOverlay("assets/precipitation.jpg", popBounds)
   };
 
   var currentBase = "atlas";
@@ -79,7 +79,7 @@
 
   // Prefetch the other layers so switching never shows a blank map
   window.addEventListener("load", function () {
-    ["assets/height.jpg", "assets/population.jpg"].forEach(function (src) {
+    ["assets/height.jpg", "assets/precipitation.jpg"].forEach(function (src) {
       var im = new Image(); im.src = src;
     });
   });
