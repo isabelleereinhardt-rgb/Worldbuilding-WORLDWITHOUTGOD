@@ -170,6 +170,16 @@ input[type="range"] { flex: 1; accent-color: var(--accent); }
   box-shadow: 0 0 4px rgba(0,0,0,.45);
 }
 .dot-city      { background: var(--city); }
+.dot-capital   { background: #e8c04a; }
+
+.capital-star {
+  color: #f5cf5a;
+  font-size: 19px;
+  line-height: 18px;
+  text-align: center;
+  text-shadow: 0 0 2px #201808, 0 1px 3px rgba(0,0,0,.8), 0 0 6px rgba(0,0,0,.5);
+  cursor: pointer;
+}
 .dot-town      { background: var(--town); border-color: #5a4a26; }
 .dot-region    { background: var(--region); }
 .dot-water     { background: var(--water); }

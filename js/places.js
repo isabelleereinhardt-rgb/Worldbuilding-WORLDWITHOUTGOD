@@ -1,7 +1,7 @@
 // World gazetteer — the six kingdoms, 7,250 BR.
 // Coordinates are pixels in the atlas image space (7680 x 3962), origin top-left.
 // Names & lore cross-checked against "Map of the world during the 7,250 BR" (canon doc).
-// cat: region | city | town | water | river | island | forest | territory | landmark
+// cat: region | capital | city | town | water | river | island | forest | territory | landmark
 // k: kingdom the place belongs to (omitted for open seas / neutral sites)
 
 const PLACES = [
@@ -9,15 +9,15 @@ const PLACES = [
   { n: "Coelum", cat: "region", x: 4235, y: 975, k: "Coelum", d: "The northern 'Forsaken Land'. Capital: Atriki, beside Lake Trang." },
   { n: "Vikitsv", cat: "region", x: 6055, y: 1830, k: "Vikitsv", d: "Mountain kingdom of the eastern peninsula, radiating from Mount Aicren. Capital: Berlailia." },
   { n: "Equateiy", cat: "region", x: 6515, y: 1185, k: "Equateiy", d: "Highland kingdom of the northeast. Capital: Ociyaran." },
-  { n: "Ociyaran", cat: "city", x: 6605, y: 1245, k: "Equateiy", d: "Capital of Equateiy, in the central highlands." },
+  { n: "Ociyaran", cat: "capital", x: 6605, y: 1245, k: "Equateiy", d: "Capital of Equateiy, in the central highlands." },
   { n: "Aicruae", cat: "region", x: 2170, y: 1920, k: "Aicruae", d: "Westernmost of the six kingdoms of the pre-Empire era. Capital: Lajazer." },
-  { n: "Lajazer", cat: "city", x: 2270, y: 1785, k: "Aicruae", d: "Capital of Aicruae, at the center of the kingdom." },
+  { n: "Lajazer", cat: "capital", x: 2270, y: 1785, k: "Aicruae", d: "Capital of Aicruae, at the center of the kingdom." },
   { n: "Pireaynea", cat: "region", x: 3020, y: 2230, k: "Pireaynea", d: "South-central kingdom directly east of Aicruae, across the Demon's Pit. Capital: Civer." },
-  { n: "Berlailia", cat: "city", x: 6795, y: 2300, k: "Vikitsv", d: "Capital of Vikitsv, on the shoulder of Mount Aicren." },
+  { n: "Berlailia", cat: "capital", x: 6795, y: 2300, k: "Vikitsv", d: "Capital of Vikitsv, on the shoulder of Mount Aicren." },
   { n: "Caduto", cat: "region", x: 6590, y: 1565, k: "Vikitsv", d: "Trade crossing on the Vikitsv-Equateiy border." },
-  { n: "Atriki", cat: "city", x: 3925, y: 710, k: "Coelum", d: "Capital of Coelum, beside Lake Trang." },
-  { n: "Tarmet", cat: "city", x: 4145, y: 2040, k: "Gherci", d: "Capital of Gherci, ringed by Greater Gherci, the Outer Walls, Asmeta, Tanya Beka and Mother's Hip." },
-  { n: "Civer", cat: "city", x: 3165, y: 2420, k: "Pireaynea", d: "Capital of Pireaynea, on its southern lake along the central river." },
+  { n: "Atriki", cat: "capital", x: 3925, y: 710, k: "Coelum", d: "Capital of Coelum, beside Lake Trang." },
+  { n: "Tarmet", cat: "capital", x: 4145, y: 2040, k: "Gherci", d: "Capital of Gherci, ringed by Greater Gherci, the Outer Walls, Asmeta, Tanya Beka and Mother's Hip." },
+  { n: "Civer", cat: "capital", x: 3165, y: 2420, k: "Pireaynea", d: "Capital of Pireaynea, on its southern lake along the central river." },
   { n: "Greater Gherci", cat: "region", x: 4200, y: 2170, k: "Gherci", d: "Core province ringing the capital Tarmet." },
   { n: "Lower Gherci", cat: "region", x: 3775, y: 2390, k: "Gherci", d: "The southwestern river country of Gherci, draining to the Fetora Sea." },
   { n: "Melert", cat: "region", x: 1850, y: 1990, k: "Aicruae", d: "Western coastal province of Aicruae; export region." },
@@ -344,7 +344,8 @@ const PLACES = [
   { n: "Caspra", cat: "town", x: 4040, y: 2305, k: "Gherci", d: "In the Kingdom of Gherci, about 225 mi south of Tarmet, near Granosa and Nords." },
   { n: "Nords", cat: "town", x: 4190, y: 2290, k: "Gherci", d: "In the Kingdom of Gherci, about 200 mi south of Tarmet, near Pelia and Tanya Beka." },
   { n: "Maru", cat: "town", x: 4950, y: 2290, k: "Gherci", d: "In the Kingdom of Gherci, about 675 mi east of Tarmet, near Loria and Menejel." },
-  { n: "Anye", cat: "town", x: 4625, y: 2320, k: "Gherci", d: "In the Kingdom of Gherci, about 450 mi southeast of Tarmet, near Saltie and Yvenna." },
+  { n: "Anye", cat: "town", x: 4625, y: 2320, k: "Gherci", d: "The eastern of the two Anyes. In the Kingdom of Gherci, about 450 mi southeast of Tarmet, near Saltie and Orin." },
+  { n: "Anye", cat: "town", x: 4300, y: 2545, k: "Gherci", d: "The southwestern of the two Anyes. In the Kingdom of Gherci, about 425 mi south of Tarmet, near Pelia and Drun." },
   { n: "Anjelie", cat: "town", x: 3905, y: 2395, k: "Gherci", d: "In the Kingdom of Gherci, about 350 mi southwest of Tarmet, near Rietra and Tarl." },
   { n: "Orin", cat: "town", x: 4445, y: 2370, k: "Gherci", d: "In the Kingdom of Gherci, about 350 mi southeast of Tarmet, near Thelia and Pelia." },
   { n: "Vagn", cat: "town", x: 4760, y: 2445, k: "Gherci", d: "In the Kingdom of Gherci, about 575 mi southeast of Tarmet, near Anye and Saltie." },
@@ -427,9 +428,7 @@ const PLACES = [
   { n: "Aslwal", cat: "town", x: 6215, y: 1675, k: "Equateiy", d: "In the Kingdom of Equateiy, about 475 mi southwest of Ociyaran, near Uada and Esteraia. A smaller town inside Uada. (Approximate placement.)" },
   { n: "Esteraia", cat: "town", x: 6155, y: 1685, k: "Equateiy", d: "In the Kingdom of Equateiy, about 500 mi southwest of Ociyaran, near Uada and Aslwal. A smaller town inside Uada. (Approximate placement.)" },
   { n: "Loedesca", cat: "river", x: 2370, y: 2210, k: "Aicruae", d: "In the Kingdom of Aicruae, about 350 mi south of Lajazer, near Caesro and The Santie. River of southeastern Aicruae, near the southern Pireaynea border." },
-  { n: "Osbury Lake", cat: "water", x: 5010, y: 2945, d: "Lake in the far southeast, near Port Linnos. (Approximate placement.)" },
   { n: "The Demon's Pit", cat: "landmark", x: 2700, y: 2150, k: "Aicruae", d: "In the Kingdom of Aicruae, about 450 mi southeast of Lajazer, near Benalo and Oahiat. Canon name for the Aicruae-Pireaynea border. (Approximate placement.)" },
-  { n: "The Principality of Watherhamia", cat: "region", x: 4330, y: 3790, d: "Highland principality south of the Fetora coast. (Approximate placement.)" }
 ];
 
 const KINGDOMS = [

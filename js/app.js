@@ -88,6 +88,7 @@
   // ---------- categories ----------
   var CATS = [
     { id: "region", label: "Realms & regions", size: 13 },
+    { id: "capital", label: "Capitals", size: 15 },
     { id: "city", label: "Cities & ports", size: 11 },
     { id: "town", label: "Towns & villages", size: 7 },
     { id: "water", label: "Seas & lakes", size: 10 },
@@ -140,10 +141,20 @@
 
   function makeMarker(p) {
     var size = catSize(p.cat);
-    var icon = L.divIcon({
-      className: "dot dot-" + p.cat,
-      iconSize: [size, size]
-    });
+    var icon;
+    if (p.cat === "capital") {
+      icon = L.divIcon({
+        className: "capital-star",
+        html: "\u2605",
+        iconSize: [18, 18],
+        iconAnchor: [9, 10]
+      });
+    } else {
+      icon = L.divIcon({
+        className: "dot dot-" + p.cat,
+        iconSize: [size, size]
+      });
+    }
     var m = L.marker(ll(p.x, p.y), {
       icon: icon,
       title: p.n,
@@ -619,13 +630,14 @@
     };
     var catOk = {};
     if (opts.kingdoms) catOk.region = true;
-    if (opts.settlements) { catOk.city = true; catOk.town = true; }
+    if (opts.settlements) { catOk.capital = true; catOk.city = true; catOk.town = true; }
     if (opts.waters) { catOk.water = true; catOk.river = true; }
     if (opts.islands) { catOk.island = true; catOk.forest = true; }
     if (opts.sacred) { catOk.territory = true; catOk.landmark = true; }
 
     var SECTIONS = [
       ["region", "Regions & provinces"],
+      ["capital", "Capital"],
       ["city", "Cities & ports"],
       ["town", "Towns & villages"],
       ["water", "Seas, lakes & bays"],
