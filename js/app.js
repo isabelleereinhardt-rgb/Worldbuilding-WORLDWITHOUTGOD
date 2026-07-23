@@ -1,4 +1,4 @@
-/* Bela — interactive atlas app */
+/* Map of the World — interactive atlas app */
 (function () {
   "use strict";
 
@@ -33,9 +33,9 @@
       var id = "p" + i;
       var e = edits[id];
       if (e && e.deleted) return;
-      var q = { id: id, n: p.n, cat: p.cat, x: p.x, y: p.y, d: p.d };
+      var q = { id: id, n: p.n, cat: p.cat, x: p.x, y: p.y, d: p.d, k: p.k };
       if (e) {
-        ["n", "cat", "x", "y", "d"].forEach(function (k) {
+        ["n", "cat", "x", "y", "d", "k"].forEach(function (k) {
           if (e[k] !== undefined) q[k] = e[k];
         });
       }
@@ -67,19 +67,20 @@
   var popBounds = [ll(63.7, 3956.7), ll(7675.2, 0)];
 
   var layers = {
+    terrain: L.imageOverlay("assets/terrain.jpg", atlasBounds),
     atlas: L.imageOverlay("assets/atlas.jpg", atlasBounds),
     height: L.imageOverlay("assets/height.jpg", atlasBounds),
     precipitation: L.imageOverlay("assets/precipitation.jpg", popBounds)
   };
 
-  var currentBase = "atlas";
-  layers.atlas.addTo(map);
+  var currentBase = "terrain";
+  layers.terrain.addTo(map);
   map.setMaxBounds([ll(-900, H + 700), ll(W + 900, -700)]);
   map.fitBounds(atlasBounds);
 
   // Prefetch the other layers so switching never shows a blank map
   window.addEventListener("load", function () {
-    ["assets/height.jpg", "assets/precipitation.jpg"].forEach(function (src) {
+    ["assets/atlas.jpg", "assets/height.jpg", "assets/precipitation.jpg"].forEach(function (src) {
       var im = new Image(); im.src = src;
     });
   });
@@ -170,6 +171,9 @@
     });
     updateCounts();
     refreshGroups();
+    if (typeof refreshDatalist === "function" && document.getElementById("place-list")) {
+      try { refreshDatalist(); } catch (e) {}
+    }
   }
 
   function refreshGroups() {
@@ -398,11 +402,17 @@
   function openAddForm(latlng) {
     var xy = xyOf(latlng);
     var form = editorForm({ n: "", cat: "town", d: "" }, function (vals) {
+      var nearestK = null, bd = Infinity;
+      PLACES.forEach(function (q) {
+        if (!q.k) return;
+        var dd = (q.x - xy.x) * (q.x - xy.x) + (q.y - xy.y) * (q.y - xy.y);
+        if (dd < bd) { bd = dd; nearestK = q.k; }
+      });
       custom.push({
         id: "c" + Date.now(),
         n: vals.n, cat: vals.cat,
         x: Math.round(xy.x), y: Math.round(xy.y),
-        d: vals.d
+        d: vals.d, k: nearestK
       });
       lsSave(LS_CUSTOM, custom);
       map.closePopup();
@@ -437,6 +447,7 @@
     var lines = list.map(function (p) {
       var s = "  { n: " + JSON.stringify(p.n) + ', cat: "' + p.cat +
         '", x: ' + Math.round(p.x) + ", y: " + Math.round(p.y);
+      if (p.k) s += ", k: " + JSON.stringify(p.k);
       if (p.d) s += ", d: " + JSON.stringify(p.d);
       return s + " }";
     });
@@ -506,10 +517,209 @@
         if (steps[i] <= targetMi) mi = steps[i];
       }
       var px = Math.round(mi / miPerScreenPx);
-      this._div.innerHTML = mi + " mi" + '<div class="bar" style="width:' + px + 'px"></div>';
+      var seg = px / 4;
+      var segs = "";
+      for (var j = 0; j < 4; j++) {
+        segs += '<span class="seg' + (j % 2 ? " alt" : "") + '" style="width:' + seg + 'px"></span>';
+      }
+      this._div.innerHTML =
+        '<div class="scale-labels"><span>0</span><span>' + (mi / 2) + '</span><span>' + mi + " mi</span></div>" +
+        '<div class="segbar">' + segs + "</div>";
     }
   });
   map.addControl(new ScaleCtl());
+
+
+  // ---------- distance tracker ----------
+  var distList = document.getElementById("place-list");
+  var distA = document.getElementById("dist-a");
+  var distB = document.getElementById("dist-b");
+  var distOut = document.getElementById("dist-result");
+
+  function refreshDatalist() {
+    distList.innerHTML = "";
+    mergedPlaces().sort(function (a, b) { return a.n.localeCompare(b.n); })
+      .forEach(function (p) {
+        var o = document.createElement("option");
+        o.value = p.n;
+        distList.appendChild(o);
+      });
+  }
+
+  function findPlace(name) {
+    var t = name.trim().toLowerCase();
+    if (!t) return null;
+    var all = mergedPlaces();
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].n.toLowerCase() === t) return all[i];
+    }
+    return null;
+  }
+
+  function updateDistance() {
+    var a = findPlace(distA.value), b = findPlace(distB.value);
+    if (!a || !b) { distOut.innerHTML = ""; return; }
+    var mi = Math.round(Math.hypot(a.x - b.x, a.y - b.y) * MI_PER_PX);
+    var foot = Math.max(1, Math.round(mi / 24));
+    var horse = Math.max(1, Math.round(mi / 45));
+    distOut.innerHTML = "<b>" + esc(a.n) + "</b> &rarr; <b>" + esc(b.n) + "</b>: " +
+      "<b>~" + mi + " mi</b> as the crow flies.<br>" +
+      "Roughly " + foot + " day" + (foot > 1 ? "s" : "") + " on foot or " +
+      horse + " day" + (horse > 1 ? "s" : "") + " mounted.";
+  }
+  distA.addEventListener("input", updateDistance);
+  distB.addEventListener("input", updateDistance);
+  refreshDatalist();
+
+  // ---------- document export ----------
+  function groupForDoc() {
+    var all = mergedPlaces();
+    var opts = {
+      settlements: document.getElementById("ex-settlements").checked,
+      kingdoms: document.getElementById("ex-kingdoms").checked,
+      waters: document.getElementById("ex-waters").checked,
+      islands: document.getElementById("ex-islands").checked,
+      sacred: document.getElementById("ex-sacred").checked,
+      biomes: document.getElementById("ex-biomes").checked,
+      mapimg: document.getElementById("ex-map").checked
+    };
+    var catOk = {};
+    if (opts.kingdoms) catOk.region = true;
+    if (opts.settlements) { catOk.city = true; catOk.town = true; }
+    if (opts.waters) { catOk.water = true; catOk.river = true; }
+    if (opts.islands) { catOk.island = true; catOk.forest = true; }
+    if (opts.sacred) { catOk.territory = true; catOk.landmark = true; }
+
+    var SECTIONS = [
+      ["region", "Regions & provinces"],
+      ["city", "Cities & ports"],
+      ["town", "Towns & villages"],
+      ["water", "Seas, lakes & bays"],
+      ["river", "Rivers"],
+      ["island", "Islands"],
+      ["forest", "Forests"],
+      ["territory", "Sacred territories"],
+      ["landmark", "Landmarks"]
+    ];
+
+    var groups = [];
+    KINGDOMS.forEach(function (kg) {
+      var g = { title: "The Kingdom of " + kg.n, meta: kg, sections: [] };
+      SECTIONS.forEach(function (sec) {
+        if (!catOk[sec[0]]) return;
+        var rows = all.filter(function (p) {
+          return p.k === kg.n && p.cat === sec[0] && p.n !== kg.n;
+        });
+        if (rows.length) g.sections.push({ label: sec[1], rows: rows });
+      });
+      groups.push(g);
+    });
+    var fe = { title: "The Far-Eastern Territories", meta: null, sections: [] };
+    SECTIONS.forEach(function (sec) {
+      if (!catOk[sec[0]]) return;
+      var rows = all.filter(function (p) {
+        return p.k === "the far-eastern territories" && p.cat === sec[0];
+      });
+      if (rows.length) fe.sections.push({ label: sec[1], rows: rows });
+    });
+    if (fe.sections.length) groups.push(fe);
+    var neutral = { title: "Open Seas & Neutral Sites", meta: null, sections: [] };
+    SECTIONS.forEach(function (sec) {
+      if (!catOk[sec[0]]) return;
+      var rows = all.filter(function (p) { return !p.k && p.cat === sec[0]; });
+      if (rows.length) neutral.sections.push({ label: sec[1], rows: rows });
+    });
+    if (neutral.sections.length) groups.push(neutral);
+    return { groups: groups, opts: opts };
+  }
+
+  function docTitle() { return texts.title || "Map of the World"; }
+  function docSubtitle() { return texts.subtitle || "The Six Kingdoms — 7,250 BR"; }
+
+  function buildHtmlDoc(data, mapDataUrl) {
+    var h = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>" + esc(docTitle()) +
+      "</title><style>body{font-family:Georgia,serif;max-width:900px;margin:30px auto;padding:0 20px;color:#2d2717;background:#f7f2e2}" +
+      "h1{letter-spacing:2px}h2{border-bottom:2px solid #8c7c50;padding-bottom:4px;margin-top:38px}" +
+      "h3{color:#6d5c32;margin:20px 0 6px}img{max-width:100%;border:1px solid #8c7c50}" +
+      "li{margin:3px 0}em{color:#6d6142}.cap{font-style:italic;color:#6d6142}</style></head><body>";
+    h += "<h1>" + esc(docTitle()) + "</h1><p class='cap'>" + esc(docSubtitle()) + "</p>";
+    if (mapDataUrl) h += "<img src='" + mapDataUrl + "' alt='World map'>";
+    data.groups.forEach(function (g) {
+      h += "<h2>" + esc(g.title) + "</h2>";
+      if (g.meta) {
+        h += "<p>" + esc(g.meta.d) + " Capital: <b>" + esc(g.meta.capital) + "</b>.</p>";
+        if (data.opts.biomes) {
+          h += "<p><em>Principal biomes:</em> " + g.meta.biomes.map(esc).join(" · ") + "</p>";
+        }
+      }
+      g.sections.forEach(function (sec) {
+        h += "<h3>" + esc(sec.label) + "</h3><ul>";
+        sec.rows.forEach(function (p) {
+          h += "<li><b>" + esc(p.n) + "</b>" + (p.d ? " — " + esc(p.d) : "") + "</li>";
+        });
+        h += "</ul>";
+      });
+    });
+    h += "<p class='cap'>Exported from the interactive atlas.</p></body></html>";
+    return h;
+  }
+
+  function buildTextDoc(data, md) {
+    var L = [];
+    var H1 = md ? "# " : "", H2 = md ? "## " : "", H3 = md ? "### " : "";
+    L.push(H1 + docTitle());
+    L.push(docSubtitle());
+    L.push("");
+    data.groups.forEach(function (g) {
+      L.push(H2 + g.title);
+      if (!md) L.push("=".repeat(g.title.length));
+      if (g.meta) {
+        L.push(g.meta.d + " Capital: " + g.meta.capital + ".");
+        if (data.opts.biomes) L.push("Principal biomes: " + g.meta.biomes.join(", ") + ".");
+      }
+      L.push("");
+      g.sections.forEach(function (sec) {
+        L.push(H3 + sec.label);
+        sec.rows.forEach(function (p) {
+          L.push((md ? "- **" + p.n + "**" : "* " + p.n) + (p.d ? " — " + p.d : ""));
+        });
+        L.push("");
+      });
+    });
+    L.push(md ? "*Exported from the interactive atlas.*" : "Exported from the interactive atlas.");
+    return L.join("\n");
+  }
+
+  function downloadFile(name, content, mime) {
+    var blob = new Blob([content], { type: mime });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  document.getElementById("ex-go").addEventListener("click", function () {
+    var data = groupForDoc();
+    var fmt = document.getElementById("ex-format").value;
+    if (fmt === "md") {
+      downloadFile("map-of-the-world.md", buildTextDoc(data, true), "text/markdown");
+    } else if (fmt === "txt") {
+      downloadFile("map-of-the-world.txt", buildTextDoc(data, false), "text/plain");
+    } else if (data.opts.mapimg) {
+      fetch("assets/terrain.jpg").then(function (r) { return r.blob(); }).then(function (b) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          downloadFile("map-of-the-world.html", buildHtmlDoc(data, fr.result), "text/html");
+        };
+        fr.readAsDataURL(b);
+      }).catch(function () {
+        downloadFile("map-of-the-world.html", buildHtmlDoc(data, null), "text/html");
+      });
+    } else {
+      downloadFile("map-of-the-world.html", buildHtmlDoc(data, null), "text/html");
+    }
+  });
 
   // ---------- boot ----------
   buildMarkers();

@@ -2,10 +2,11 @@
 
 A world building site that helps me think and process world building for my World Without God universe.
 
-## Bela Interactive Atlas
+## Map of the World — Interactive Atlas
 
-An interactive, explorable map of the world of **Bela**, rebuilt from the
-Azgaar Fantasy Map Generator exports as a self-contained static website.
+An interactive, explorable map of the six kingdoms as they stood in 7,250 BR,
+rebuilt from the Azgaar Fantasy Map Generator exports as a self-contained
+static website.
 
 ### Run it
 
@@ -22,16 +23,25 @@ and it will be live at your Pages URL.
 ### Features
 
 - **Pan & zoom** across the full 7680×3962 px atlas.
-- **Three switchable layers**, aligned to one coordinate space:
+- **Four switchable layers**, aligned to one coordinate space:
+  - *Terrain (default)* — full-opacity elevation render with all labels
   - *Atlas* — the labeled political/terrain map
-  - *Heightmap* — elevation render
+  - *Heightmap* — unlabeled elevation render
   - *Precipitation* — rainfall map (blue dots mark how much rain each area gets)
 - **Compare mode** — blend a second layer over the base with an opacity slider.
 - **~425 searchable places** — the six kingdoms and their capitals, regions,
   cities & ports, towns, seas & lakes, rivers, islands, forests, sacred
   territories, and landmarks, each with a marker, tooltip and popup. Names and
-  descriptions cross-checked against the world canon document. Town markers
-  declutter automatically at low zoom.
+  descriptions cross-checked against the world canon document; every place
+  lists its kingdom and nearest neighbours. Town markers declutter
+  automatically at low zoom.
+- **Distance tracker** — pick any two places in the sidebar to get the
+  straight-line distance in miles plus rough travel times on foot / mounted.
+- **Document export** — build a gazetteer document from the map (like
+  Azgaar's export settings): toggle the full map image, kingdoms & regions,
+  cities & towns, seas/lakes/rivers, islands & forests, sacred territories &
+  landmarks, and per-kingdom biomes; output as a web page, Markdown, or
+  plain text.
 - **Click anywhere** on any layer to see the nearest named place and its
   distance in miles.
 - **Edit mode** — edit any place's name, category and description; drag

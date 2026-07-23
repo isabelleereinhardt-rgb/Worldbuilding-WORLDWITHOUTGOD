@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bela &mdash; Interactive Atlas</title>
+<title>Map of the World &mdash; The Six Kingdoms</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="css/style.css">
@@ -14,8 +14,8 @@
     <button id="sidebar-toggle" title="Toggle panel">&#9776;</button>
     <div id="sidebar-inner">
       <header>
-        <h1 data-edit="title">Bela</h1>
-        <p class="subtitle" data-edit="subtitle">Interactive Atlas of the World</p>
+        <h1 data-edit="title">Map of the World</h1>
+        <p class="subtitle" data-edit="subtitle">The Six Kingdoms &mdash; 7,250 BR</p>
       </header>
 
       <div class="panel">
@@ -25,7 +25,8 @@
 
       <div class="panel">
         <h2>Map layer</h2>
-        <label class="row"><input type="radio" name="base" value="atlas" checked> Atlas</label>
+        <label class="row"><input type="radio" name="base" value="terrain" checked> Terrain (default)</label>
+        <label class="row"><input type="radio" name="base" value="atlas"> Atlas</label>
         <label class="row"><input type="radio" name="base" value="height"> Heightmap</label>
         <label class="row"><input type="radio" name="base" value="precipitation"> Precipitation</label>
         <h2>Compare overlay</h2>
@@ -35,6 +36,7 @@
             <option value="height">Heightmap</option>
             <option value="precipitation">Precipitation</option>
             <option value="atlas">Atlas</option>
+            <option value="terrain">Terrain</option>
           </select>
           <input type="range" id="cmp-opacity" min="0" max="100" value="50" title="Overlay opacity">
         </div>
@@ -60,17 +62,47 @@
       </div>
 
       <div class="panel">
+        <h2 class="collapser" data-target="dist-body">Distance tracker <span class="chev">&#9662;</span></h2>
+        <div id="dist-body" class="hidden">
+          <p class="hint">Pick two places to estimate the straight-line distance between them.</p>
+          <input id="dist-a" list="place-list" placeholder="From&hellip;" autocomplete="off">
+          <input id="dist-b" list="place-list" placeholder="To&hellip;" autocomplete="off">
+          <datalist id="place-list"></datalist>
+          <div id="dist-result" class="hint"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="collapser" data-target="export-body">Export <span class="chev">&#9662;</span></h2>
+        <div id="export-body" class="hidden">
+          <p class="hint">Build a document from the map. Toggle what to include:</p>
+          <label class="row"><input type="checkbox" id="ex-map" checked> Full map image</label>
+          <label class="row"><input type="checkbox" id="ex-kingdoms" checked> Kingdoms &amp; regions</label>
+          <label class="row"><input type="checkbox" id="ex-settlements" checked> Cities &amp; towns</label>
+          <label class="row"><input type="checkbox" id="ex-waters" checked> Seas, lakes &amp; rivers</label>
+          <label class="row"><input type="checkbox" id="ex-islands" checked> Islands &amp; forests</label>
+          <label class="row"><input type="checkbox" id="ex-sacred" checked> Sacred territories &amp; landmarks</label>
+          <label class="row"><input type="checkbox" id="ex-biomes" checked> Biomes by kingdom</label>
+          <div class="row indent">
+            <select id="ex-format">
+              <option value="html">Web page (.html)</option>
+              <option value="md">Markdown (.md)</option>
+              <option value="txt">Plain text (.txt)</option>
+            </select>
+          </div>
+          <div class="btn-row"><button id="ex-go">Generate document</button></div>
+        </div>
+      </div>
+
+      <div class="panel">
         <h2 class="collapser" data-target="biome-legend">Biomes <span class="chev">&#9662;</span></h2>
         <ul id="biome-legend" class="hidden"></ul>
       </div>
 
       <div class="panel about">
         <h2>About</h2>
-        <p data-edit="about1">A world called Bela, in the age of the six kingdoms.
-        Base cartography exported from Azgaar's Fantasy Map Generator; rebuilt
-        here as a pannable, zoomable, searchable atlas.</p>
-        <p data-edit="about2">Scale: 1 map pixel &asymp; 0.8 mi. Click anywhere on
-        the map to find the nearest named place.</p>
+        <p data-edit="about1">A map of the six kingdoms of the world, as they stood
+        in 7,250 BR.</p>
       </div>
     </div>
   </aside>

@@ -70,8 +70,8 @@ body {
 }
 
 header h1 {
-  font-size: 34px;
-  letter-spacing: 5px;
+  font-size: 21px;
+  letter-spacing: 2.5px;
   color: var(--accent);
   text-transform: uppercase;
 }
@@ -255,11 +255,33 @@ body.editing [data-edit] {
   font-size: 11px;
   line-height: 1.2;
 }
-.bela-scale .bar {
-  height: 5px;
-  border: 1.5px solid var(--ink);
-  border-top: none;
+.bela-scale .scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1px;
 }
+.bela-scale .segbar {
+  display: flex;
+  height: 7px;
+  border: 1.5px solid var(--ink);
+}
+.bela-scale .seg { background: var(--ink); height: 100%; }
+.bela-scale .seg.alt { background: #f4eed7; }
+
+#dist-a, #dist-b {
+  width: 100%;
+  margin: 4px 0;
+  padding: 6px 8px;
+  background: #171410;
+  color: var(--panel-fg);
+  border: 1px solid #4a4028;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13.5px;
+  box-sizing: border-box;
+}
+#dist-result { margin-top: 6px; font-size: 13px; color: var(--panel-fg); }
+#dist-result b { color: var(--accent); }
 
 @media (max-width: 720px) {
   #sidebar { position: absolute; height: 100%; }
