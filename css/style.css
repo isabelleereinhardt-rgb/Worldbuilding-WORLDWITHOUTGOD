@@ -12,6 +12,7 @@
   --forest: #35701f;
   --territory: #8e2e7c;
   --landmark: #d08a1d;
+  --river: #3d85c8;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -172,6 +173,7 @@ input[type="range"] { flex: 1; accent-color: var(--accent); }
 .dot-town      { background: var(--town); border-color: #5a4a26; }
 .dot-region    { background: var(--region); }
 .dot-water     { background: var(--water); }
+.dot-river     { background: var(--river); }
 .dot-island    { background: var(--island); }
 .dot-forest    { background: var(--forest); }
 .dot-territory { background: var(--territory); }
@@ -198,6 +200,49 @@ input[type="range"] { flex: 1; accent-color: var(--accent); }
   color: #ecdfb9;
   border: 1px solid #6b5c35;
   font-family: Georgia, serif;
+}
+
+/* edit mode */
+.hint { font-size: 12px; color: #97906f; line-height: 1.45; margin: 6px 0 8px; }
+.hint code { color: #c9b87c; }
+.btn-row { display: flex; gap: 8px; }
+.btn-row button, .pbtn {
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 6px 10px;
+  background: #37301d;
+  color: var(--panel-fg);
+  border: 1px solid #5a4e2e;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-row button:hover, .pbtn:hover { background: #4a4028; }
+button.danger { color: #e08a80; border-color: #6b3a32; }
+
+.pbtn { margin-top: 8px; margin-right: 6px; }
+
+.edit-form label { display: block; font-size: 12px; margin: 6px 0; color: #55492e; }
+.edit-form input, .edit-form select, .edit-form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 2px;
+  padding: 5px 7px;
+  font-family: inherit;
+  font-size: 13px;
+  border: 1px solid #8c7c50;
+  border-radius: 3px;
+  background: #fffdf2;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.ef-row { display: flex; gap: 6px; }
+
+body.editing #map { cursor: crosshair; }
+body.editing #map:active { cursor: crosshair; }
+body.editing [data-edit] {
+  outline: 1px dashed #c9a84c88;
+  outline-offset: 3px;
+  cursor: text;
 }
 
 /* scale control */

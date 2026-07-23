@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bela &mdash; Interactive Atlas</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,8 +14,8 @@
     <button id="sidebar-toggle" title="Toggle panel">&#9776;</button>
     <div id="sidebar-inner">
       <header>
-        <h1>Bela</h1>
-        <p class="subtitle">Interactive Atlas of the World</p>
+        <h1 data-edit="title">Bela</h1>
+        <p class="subtitle" data-edit="subtitle">Interactive Atlas of the World</p>
       </header>
 
       <div class="panel">
@@ -45,15 +46,31 @@
       </div>
 
       <div class="panel">
+        <h2>Edit mode</h2>
+        <label class="row"><input type="checkbox" id="edit-on"> Enable editing</label>
+        <p class="hint">While editing: click a marker &rarr; ✎ Edit its name, type
+        and description; drag markers to move them; click empty map to add a new
+        place; the title and About text become editable too. Changes are saved in
+        this browser &mdash; use the download button to get an updated
+        <code>places.js</code> you can commit to the site.</p>
+        <div class="btn-row">
+          <button id="export-btn">Download places.js</button>
+          <button id="reset-btn" class="danger">Reset edits</button>
+        </div>
+      </div>
+
+      <div class="panel">
         <h2 class="collapser" data-target="biome-legend">Biomes <span class="chev">&#9662;</span></h2>
         <ul id="biome-legend" class="hidden"></ul>
       </div>
 
       <div class="panel about">
         <h2>About</h2>
-        <p>A world called Bela. Base cartography exported from Azgaar's Fantasy
-        Map Generator; rebuilt here as a pannable, zoomable, searchable atlas.</p>
-        <p>Scale: 1&nbsp;map&nbsp;pixel &asymp; 0.8&nbsp;mi.</p>
+        <p data-edit="about1">A world called Bela, in the age of the six kingdoms.
+        Base cartography exported from Azgaar's Fantasy Map Generator; rebuilt
+        here as a pannable, zoomable, searchable atlas.</p>
+        <p data-edit="about2">Scale: 1 map pixel &asymp; 0.8 mi. Click anywhere on
+        the map to find the nearest named place.</p>
       </div>
     </div>
   </aside>
