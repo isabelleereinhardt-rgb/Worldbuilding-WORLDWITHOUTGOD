@@ -1,0 +1,35 @@
+name: Deploy Codex to GitHub Pages
+
+# Publishes the whole repo (the site in /site plus the /source assets it reads)
+# to GitHub Pages. Runs on pushes to the working branch and to main.
+
+on:
+  push:
+    branches:
+      - main
+      - claude/worldbuilding-database-ai-5tlkaq
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - id: deployment
+        uses: actions/deploy-pages@v4
