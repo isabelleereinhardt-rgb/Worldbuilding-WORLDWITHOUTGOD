@@ -8,6 +8,8 @@ An interactive, explorable map of the six kingdoms as they stood in 7,250 BR,
 rebuilt from the Azgaar Fantasy Map Generator exports as a self-contained
 static website.
 
+**🗺️ Live site: <https://isabelleereinhardt-rgb.github.io/Worldbuilding-WORLDWITHOUTGOD/>**
+
 ### Run it
 
 No build step — it's plain HTML/JS/CSS. Serve the folder and open it:
