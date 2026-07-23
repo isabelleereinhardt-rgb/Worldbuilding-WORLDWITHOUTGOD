@@ -319,7 +319,7 @@ const PLACES = [
   { n: "Vashon", cat: "town", x: 4440, y: 1850, k: "Gherci", d: "In the Kingdom of Gherci, about 275 mi northeast of Tarmet, near Elemie and Laiya." },
   { n: "Laiya", cat: "town", x: 4580, y: 1830, k: "Gherci", d: "In the Kingdom of Gherci, about 375 mi northeast of Tarmet, near Vashon and Iel." },
   { n: "Inen", cat: "town", x: 4760, y: 1865, k: "Gherci", d: "In the Kingdom of Gherci, about 500 mi east of Tarmet, near Avani and Lujia." },
-  { n: "Muri", cat: "town", x: 4950, y: 1915, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 625 mi north of Mireb, near Belnara and Kidaris." },
+  { n: "Muri", cat: "town", x: 4950, y: 1915, k: "Gherci", d: "In the Kingdom of Gherci, about 375 mi east of Tarmet, near Inen and Avani." },
   { n: "Bayen", cat: "town", x: 3895, y: 1825, k: "Gherci", d: "In the Kingdom of Gherci, about 275 mi northwest of Tarmet, near Treas and Belune." },
   { n: "Treas", cat: "town", x: 3905, y: 1965, k: "Gherci", d: "In the Kingdom of Gherci, about 200 mi west of Tarmet, near Keba and Bayen." },
   { n: "Lendara", cat: "town", x: 4140, y: 1960, k: "Gherci", d: "In the Kingdom of Gherci, about 60 mi north of Tarmet, near Asmeta and Malin." },

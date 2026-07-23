@@ -70,7 +70,8 @@
     terrain: L.imageOverlay("assets/terrain.jpg", atlasBounds),
     atlas: L.imageOverlay("assets/atlas.jpg", atlasBounds),
     height: L.imageOverlay("assets/height.jpg", atlasBounds),
-    precipitation: L.imageOverlay("assets/precipitation.jpg", popBounds)
+    precipitation: L.imageOverlay("assets/precipitation.jpg", popBounds),
+    borders: L.imageOverlay("assets/borders.jpg", atlasBounds)
   };
 
   var currentBase = "terrain";
@@ -80,7 +81,7 @@
 
   // Prefetch the other layers so switching never shows a blank map
   window.addEventListener("load", function () {
-    ["assets/atlas.jpg", "assets/height.jpg", "assets/precipitation.jpg"].forEach(function (src) {
+    ["assets/atlas.jpg", "assets/height.jpg", "assets/precipitation.jpg", "assets/borders.jpg"].forEach(function (src) {
       var im = new Image(); im.src = src;
     });
   });
@@ -622,7 +623,8 @@
     terrain: { src: "assets/terrain.jpg", x0: 0, y0: 0, x1: W, y1: H },
     atlas: { src: "assets/atlas.jpg", x0: 0, y0: 0, x1: W, y1: H },
     height: { src: "assets/height.jpg", x0: 0, y0: 0, x1: W, y1: H },
-    precipitation: { src: "assets/precipitation.jpg", x0: 63.7, y0: 0, x1: 7675.2, y1: 3956.7 }
+    precipitation: { src: "assets/precipitation.jpg", x0: 63.7, y0: 0, x1: 7675.2, y1: 3956.7 },
+    borders: { src: "assets/borders.jpg", x0: 0, y0: 0, x1: W, y1: H }
   };
   var imgCache = {};
   function loadLayerImage(key) {

@@ -6,7 +6,7 @@
 <title>Map of the World &mdash; The Six Kingdoms</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 <div id="app">
@@ -29,6 +29,7 @@
         <label class="row"><input type="radio" name="base" value="atlas"> Atlas</label>
         <label class="row"><input type="radio" name="base" value="height"> Heightmap</label>
         <label class="row"><input type="radio" name="base" value="precipitation"> Precipitation</label>
+        <label class="row"><input type="radio" name="base" value="borders"> Kingdom borders</label>
         <h2>Compare overlay</h2>
         <label class="row"><input type="checkbox" id="cmp-on"> Show second layer on top</label>
         <div class="row indent">
@@ -37,6 +38,7 @@
             <option value="precipitation">Precipitation</option>
             <option value="atlas">Atlas</option>
             <option value="terrain">Terrain</option>
+            <option value="borders">Kingdom borders</option>
           </select>
           <input type="range" id="cmp-opacity" min="0" max="100" value="50" title="Overlay opacity">
         </div>
@@ -113,7 +115,7 @@
   <div id="map"></div>
 </div>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/places.js?v=7"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/places.js?v=8"></script>
+<script src="js/app.js?v=8"></script>
 </body>
 </html>
