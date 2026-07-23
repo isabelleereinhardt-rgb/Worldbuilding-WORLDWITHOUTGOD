@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bela &mdash; Interactive Atlas</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <button id="sidebar-toggle" title="Toggle panel">&#9776;</button>
+    <div id="sidebar-inner">
+      <header>
+        <h1>Bela</h1>
+        <p class="subtitle">Interactive Atlas of the World</p>
+      </header>
+
+      <div class="panel">
+        <input id="search" type="search" placeholder="Search places&hellip;" autocomplete="off">
+        <ul id="search-results"></ul>
+      </div>
+
+      <div class="panel">
+        <h2>Map layer</h2>
+        <label class="row"><input type="radio" name="base" value="atlas" checked> Atlas</label>
+        <label class="row"><input type="radio" name="base" value="height"> Heightmap</label>
+        <label class="row"><input type="radio" name="base" value="population"> Population</label>
+        <h2>Compare overlay</h2>
+        <label class="row"><input type="checkbox" id="cmp-on"> Show second layer on top</label>
+        <div class="row indent">
+          <select id="cmp-layer">
+            <option value="height">Heightmap</option>
+            <option value="population">Population</option>
+            <option value="atlas">Atlas</option>
+          </select>
+          <input type="range" id="cmp-opacity" min="0" max="100" value="50" title="Overlay opacity">
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Markers</h2>
+        <div id="cat-toggles"></div>
+      </div>
+
+      <div class="panel">
+        <h2 class="collapser" data-target="biome-legend">Biomes <span class="chev">&#9662;</span></h2>
+        <ul id="biome-legend" class="hidden"></ul>
+      </div>
+
+      <div class="panel about">
+        <h2>About</h2>
+        <p>A world called Bela. Base cartography exported from Azgaar's Fantasy
+        Map Generator; rebuilt here as a pannable, zoomable, searchable atlas.</p>
+        <p>Scale: 1&nbsp;map&nbsp;pixel &asymp; 0.8&nbsp;mi.</p>
+      </div>
+    </div>
+  </aside>
+  <div id="map"></div>
+</div>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="js/places.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
