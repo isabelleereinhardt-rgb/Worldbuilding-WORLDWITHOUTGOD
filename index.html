@@ -6,7 +6,7 @@
 <title>Map of the World &mdash; The Six Kingdoms</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body>
 <div id="app">
@@ -75,7 +75,9 @@
       <div class="panel">
         <h2 class="collapser" data-target="export-body">Export <span class="chev">&#9662;</span></h2>
         <div id="export-body" class="hidden">
-          <p class="hint">Build a document from the map. Toggle what to include:</p>
+          <p class="hint">Save an image of the current view (pan/zoom to frame it
+          first &mdash; visible markers are included), or build a document.
+          Toggles apply to documents:</p>
           <label class="row"><input type="checkbox" id="ex-map" checked> Full map image</label>
           <label class="row"><input type="checkbox" id="ex-kingdoms" checked> Kingdoms &amp; regions</label>
           <label class="row"><input type="checkbox" id="ex-settlements" checked> Cities &amp; towns</label>
@@ -85,6 +87,8 @@
           <label class="row"><input type="checkbox" id="ex-biomes" checked> Biomes by kingdom</label>
           <div class="row indent">
             <select id="ex-format">
+              <option value="png">Image of current view (.png)</option>
+              <option value="jpg">Image of current view (.jpg)</option>
               <option value="html">Web page (.html)</option>
               <option value="md">Markdown (.md)</option>
               <option value="txt">Plain text (.txt)</option>
@@ -109,7 +113,7 @@
   <div id="map"></div>
 </div>
 <script src="vendor/leaflet/leaflet.js"></script>
-<script src="js/places.js?v=6"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/places.js?v=7"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>

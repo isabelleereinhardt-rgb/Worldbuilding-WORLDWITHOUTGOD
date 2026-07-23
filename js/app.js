@@ -616,6 +616,108 @@
   distB.addEventListener("change", updateDistance);
   refreshDatalist();
 
+
+  // ---------- image export of the current view ----------
+  var LAYER_INFO = {
+    terrain: { src: "assets/terrain.jpg", x0: 0, y0: 0, x1: W, y1: H },
+    atlas: { src: "assets/atlas.jpg", x0: 0, y0: 0, x1: W, y1: H },
+    height: { src: "assets/height.jpg", x0: 0, y0: 0, x1: W, y1: H },
+    precipitation: { src: "assets/precipitation.jpg", x0: 63.7, y0: 0, x1: 7675.2, y1: 3956.7 }
+  };
+  var imgCache = {};
+  function loadLayerImage(key) {
+    return new Promise(function (resolve, reject) {
+      if (imgCache[key] && imgCache[key].complete) return resolve(imgCache[key]);
+      var im = new Image();
+      im.onload = function () { resolve(im); };
+      im.onerror = reject;
+      im.src = LAYER_INFO[key].src;
+      imgCache[key] = im;
+    });
+  }
+
+  var MARKER_COLORS = {
+    region: "#5b4a8a", capital: "#e8c04a", city: "#b03a2e", town: "#f2e3b0",
+    water: "#2e6f8e", river: "#3d85c8", island: "#2e8e64", forest: "#35701f",
+    territory: "#8e2e7c", landmark: "#d08a1d"
+  };
+
+  function exportViewImage(kind) {
+    var mapEl = document.getElementById("map");
+    var cw = mapEl.clientWidth, ch = mapEl.clientHeight;
+    var scaleUp = 2; // render at 2x for crispness
+    var canvas = document.createElement("canvas");
+    canvas.width = cw * scaleUp; canvas.height = ch * scaleUp;
+    var ctx = canvas.getContext("2d");
+    var bounds = map.getBounds();
+    var vx0 = bounds.getWest(), vx1 = bounds.getEast();
+    var vy0 = H - bounds.getNorth(), vy1 = H - bounds.getSouth(); // atlas y (top..bottom)
+    function toCanvas(ax, ay) {
+      return [(ax - vx0) / (vx1 - vx0) * canvas.width,
+              (ay - vy0) / (vy1 - vy0) * canvas.height];
+    }
+    ctx.fillStyle = "#c2c69a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    function drawLayer(key, alpha) {
+      return loadLayerImage(key).then(function (im) {
+        var inf = LAYER_INFO[key];
+        var sx = (vx0 - inf.x0) / (inf.x1 - inf.x0) * im.naturalWidth;
+        var sy = (vy0 - inf.y0) / (inf.y1 - inf.y0) * im.naturalHeight;
+        var sw = (vx1 - vx0) / (inf.x1 - inf.x0) * im.naturalWidth;
+        var sh = (vy1 - vy0) / (inf.y1 - inf.y0) * im.naturalHeight;
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(im, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+      });
+    }
+
+    var jobs = drawLayer(currentBase, 1);
+    if (cmpActive) {
+      var cmpKey = cmpSel.value;
+      jobs = jobs.then(function () {
+        return drawLayer(cmpKey, cmpOpacity.value / 100);
+      });
+    }
+    jobs.then(function () {
+      // markers, respecting current visibility rules
+      var zoomOK = map.getZoom() >= TOWN_MIN_ZOOM;
+      mergedPlaces().forEach(function (p) {
+        if (!enabled[p.cat]) return;
+        if (p.cat === "town" && !zoomOK) return;
+        if (p.x < vx0 - 20 || p.x > vx1 + 20 || p.y < vy0 - 20 || p.y > vy1 + 20) return;
+        var pt = toCanvas(p.x, p.y);
+        if (p.cat === "capital") {
+          ctx.font = (19 * scaleUp) + "px serif";
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.lineWidth = 3 * scaleUp; ctx.strokeStyle = "rgba(20,16,8,.85)";
+          ctx.strokeText("\u2605", pt[0], pt[1]);
+          ctx.fillStyle = MARKER_COLORS.capital;
+          ctx.fillText("\u2605", pt[0], pt[1]);
+        } else {
+          var rr = (catSize(p.cat) / 2 + 1) * scaleUp;
+          ctx.beginPath();
+          ctx.arc(pt[0], pt[1], rr, 0, Math.PI * 2);
+          ctx.fillStyle = MARKER_COLORS[p.cat] || "#888";
+          ctx.fill();
+          ctx.lineWidth = 1.5 * scaleUp;
+          ctx.strokeStyle = "rgba(20,16,8,.85)";
+          ctx.stroke();
+        }
+      });
+      var mime = kind === "jpg" ? "image/jpeg" : "image/png";
+      canvas.toBlob(function (blob) {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "map-view." + (kind === "jpg" ? "jpg" : "png");
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }, mime, 0.92);
+    }).catch(function (e) {
+      alert("Could not render the view: " + e);
+    });
+  }
+
   // ---------- document export ----------
   function groupForDoc() {
     var all = mergedPlaces();
@@ -746,8 +848,9 @@
   }
 
   document.getElementById("ex-go").addEventListener("click", function () {
-    var data = groupForDoc();
     var fmt = document.getElementById("ex-format").value;
+    if (fmt === "png" || fmt === "jpg") { exportViewImage(fmt); return; }
+    var data = groupForDoc();
     if (fmt === "md") {
       downloadFile("map-of-the-world.md", buildTextDoc(data, true), "text/markdown");
     } else if (fmt === "txt") {
