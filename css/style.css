@@ -280,8 +280,15 @@ body.editing [data-edit] {
   font-size: 13.5px;
   box-sizing: border-box;
 }
-#dist-result { margin-top: 6px; font-size: 13px; color: var(--panel-fg); }
+#dist-result { margin-top: 6px; font-size: 13px; color: var(--panel-fg); line-height: 1.5; }
+#dist-result:not(:empty) {
+  background: #171410;
+  border: 1px solid #4a4028;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
 #dist-result b { color: var(--accent); }
+#dist-result .dist-big { font-size: 19px; color: var(--accent); font-weight: bold; }
 
 @media (max-width: 720px) {
   #sidebar { position: absolute; height: 100%; }

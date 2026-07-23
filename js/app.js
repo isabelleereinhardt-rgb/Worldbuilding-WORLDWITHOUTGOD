@@ -550,25 +550,59 @@
     var t = name.trim().toLowerCase();
     if (!t) return null;
     var all = mergedPlaces();
-    for (var i = 0; i < all.length; i++) {
+    var i;
+    for (i = 0; i < all.length; i++) {
       if (all[i].n.toLowerCase() === t) return all[i];
     }
+    var pre = all.filter(function (p) { return p.n.toLowerCase().indexOf(t) === 0; });
+    if (pre.length === 1) return pre[0];
+    var sub = all.filter(function (p) { return p.n.toLowerCase().indexOf(t) !== -1; });
+    if (sub.length === 1) return sub[0];
     return null;
   }
 
+  function sideStatus(input) {
+    var raw = input.value.trim();
+    if (!raw) return { state: "empty" };
+    var p = findPlace(raw);
+    if (p) return { state: "ok", place: p };
+    return { state: "bad", raw: raw };
+  }
+
   function updateDistance() {
-    var a = findPlace(distA.value), b = findPlace(distB.value);
-    if (!a || !b) { distOut.innerHTML = ""; return; }
-    var mi = Math.round(Math.hypot(a.x - b.x, a.y - b.y) * MI_PER_PX);
-    var foot = Math.max(1, Math.round(mi / 24));
-    var horse = Math.max(1, Math.round(mi / 45));
-    distOut.innerHTML = "<b>" + esc(a.n) + "</b> &rarr; <b>" + esc(b.n) + "</b>: " +
-      "<b>~" + mi + " mi</b> as the crow flies.<br>" +
-      "Roughly " + foot + " day" + (foot > 1 ? "s" : "") + " on foot or " +
-      horse + " day" + (horse > 1 ? "s" : "") + " mounted.";
+    var a = sideStatus(distA), b = sideStatus(distB);
+    if (a.state === "empty" && b.state === "empty") {
+      distOut.innerHTML = "";
+      return;
+    }
+    if (a.state === "ok" && b.state === "ok") {
+      var pa = a.place, pb = b.place;
+      if (pa.n === pb.n) {
+        distOut.innerHTML = "Pick two different places.";
+        return;
+      }
+      var mi = Math.round(Math.hypot(pa.x - pb.x, pa.y - pb.y) * MI_PER_PX);
+      var foot = Math.max(1, Math.round(mi / 24));
+      var horse = Math.max(1, Math.round(mi / 45));
+      distOut.innerHTML = "<b>" + esc(pa.n) + "</b> &rarr; <b>" + esc(pb.n) + "</b><br>" +
+        '<span class="dist-big">~' + mi + " miles</span> as the crow flies<br>" +
+        "Roughly <b>" + foot + " day" + (foot > 1 ? "s" : "") + "</b> on foot or <b>" +
+        horse + " day" + (horse > 1 ? "s" : "") + "</b> mounted.";
+      return;
+    }
+    var msgs = [];
+    [["From", a], ["To", b]].forEach(function (row) {
+      var label = row[0], st = row[1];
+      if (st.state === "ok") msgs.push(label + ": &#10003; " + esc(st.place.n));
+      else if (st.state === "bad") msgs.push(label + ": no place called &ldquo;" + esc(st.raw) + "&rdquo; &mdash; keep typing or pick from the list");
+      else msgs.push(label + ": type or pick a place");
+    });
+    distOut.innerHTML = msgs.join("<br>");
   }
   distA.addEventListener("input", updateDistance);
   distB.addEventListener("input", updateDistance);
+  distA.addEventListener("change", updateDistance);
+  distB.addEventListener("change", updateDistance);
   refreshDatalist();
 
   // ---------- document export ----------
