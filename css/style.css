@@ -301,6 +301,8 @@ body.editing [data-edit] {
 }
 #dist-result b { color: var(--accent); }
 #dist-result .dist-big { font-size: 19px; color: var(--accent); font-weight: bold; }
+#dist-result .sea-yes { color: #7fc7e8; display: inline-block; margin-top: 4px; }
+#dist-result .sea-no { color: #c99; display: inline-block; margin-top: 4px; font-style: italic; }
 
 @media (max-width: 720px) {
   #sidebar { position: absolute; height: 100%; }

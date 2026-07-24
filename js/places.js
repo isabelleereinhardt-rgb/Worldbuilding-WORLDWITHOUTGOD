@@ -383,7 +383,7 @@ const PLACES = [
   { n: "Dremk", cat: "town", x: 5225, y: 2080, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 475 mi north of Amba, near Tusjin and Tsir." },
   { n: "Allisto", cat: "town", x: 5585, y: 2115, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 425 mi north of Amba, near Brall and Aspardo." },
   { n: "Rudeth", cat: "town", x: 5410, y: 2140, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 400 mi north of Amba, near Denkay and Dugwil." },
-  { n: "Brall", cat: "town", x: 5610, y: 2160, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 400 mi north of Amba, near Allisto and Dugwil." },
+  { n: "Bralk", cat: "town", x: 5610, y: 2160, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 400 mi north of Amba, near Allisto and Dugwil." },
   { n: "Tsir", cat: "town", x: 5235, y: 2210, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 375 mi northwest of Amba, near Dremk and Rudeth." },
   { n: "Dugwil", cat: "town", x: 5515, y: 2200, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 350 mi north of Amba, near Brall and Allisto." },
   { n: "Hagn", cat: "town", x: 5410, y: 2285, k: "the far-eastern territories", d: "In the far-eastern territories beyond Gherci's border, about 275 mi north of Amba, near Hauk and Dugwil." },

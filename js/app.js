@@ -574,6 +574,77 @@
   map.addControl(new ScaleCtl());
 
 
+  // ---------- sea routing ----------
+  var SEA = (typeof SEA_GRID !== "undefined") ? (function () {
+    var raw = atob(SEA_GRID.bits);
+    var bytes = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    var gw = SEA_GRID.gw, gh = SEA_GRID.gh, cell = SEA_GRID.cell;
+    function nav(i, j) {
+      if (i < 0 || j < 0 || i >= gw || j >= gh) return false;
+      var idx = j * gw + i;
+      return (bytes[idx >> 3] & (128 >> (idx & 7))) !== 0;
+    }
+    var COAST_CELLS = 3; // ~76 mi max from shore to still count as reachable
+    // nearest navigable cell to atlas (x,y); returns {i,j,mi} or null
+    function embark(x, y) {
+      var ci = Math.floor(x / cell), cj = Math.floor(y / cell);
+      var best = null, bd = 1e9;
+      for (var dj = -COAST_CELLS; dj <= COAST_CELLS; dj++) {
+        for (var di = -COAST_CELLS; di <= COAST_CELLS; di++) {
+          if (nav(ci + di, cj + dj)) {
+            var d = di * di + dj * dj;
+            if (d < bd) { bd = d; best = { i: ci + di, j: cj + dj }; }
+          }
+        }
+      }
+      if (!best) return null;
+      best.mi = Math.sqrt(bd) * cell * MI_PER_PX;
+      return best;
+    }
+    // Dijkstra sea distance (mi) between two embark cells, 8-connected
+    function route(ea, eb) {
+      var key = function (i, j) { return j * gw + i; };
+      var dist = {}, sk = key(ea.i, ea.j), tk = key(eb.i, eb.j);
+      dist[sk] = 0;
+      var pq = [[0, ea.i, ea.j]];
+      function push(d, i, j) {
+        pq.push([d, i, j]);
+        var c = pq.length - 1;
+        while (c > 0) { var pI = (c - 1) >> 1; if (pq[pI][0] <= pq[c][0]) break; var t = pq[pI]; pq[pI] = pq[c]; pq[c] = t; c = pI; }
+      }
+      function pop() {
+        var top = pq[0], last = pq.pop();
+        if (pq.length) { pq[0] = last; var c = 0; for (;;) { var l = 2 * c + 1, r = l + 1, m = c; if (l < pq.length && pq[l][0] < pq[m][0]) m = l; if (r < pq.length && pq[r][0] < pq[m][0]) m = r; if (m === c) break; var t = pq[m]; pq[m] = pq[c]; pq[c] = t; c = m; } }
+        return top;
+      }
+      var SQ2 = Math.SQRT2, cellMi = cell * MI_PER_PX;
+      while (pq.length) {
+        var cur = pop(), d = cur[0], i = cur[1], j = cur[2], k = key(i, j);
+        if (d > (dist[k] === undefined ? 1e18 : dist[k])) continue;
+        if (k === tk) return d * cellMi;
+        for (var dj = -1; dj <= 1; dj++) for (var di = -1; di <= 1; di++) {
+          if (!di && !dj) continue;
+          if (!nav(i + di, j + dj)) continue;
+          var nk = key(i + di, j + dj), nd = d + (di && dj ? SQ2 : 1);
+          if (nd < (dist[nk] === undefined ? 1e18 : dist[nk])) { dist[nk] = nd; push(nd, i + di, j + dj); }
+        }
+      }
+      return null;
+    }
+    return {
+      // returns {viable, embarkMi, seaMi} — seaMi filled only when routing both
+      reachable: function (p) {
+        if (p.cat === "island") return { viable: true, e: embark(p.x, p.y) };
+        var e = embark(p.x, p.y);
+        var isPort = /(^|\s)Port(\s|$)/.test(p.n);
+        if (e && (e.mi <= 60 || isPort)) return { viable: true, e: e };
+        return { viable: false, e: e };
+      },
+      route: route
+    };
+  })() : null;
+
   // ---------- distance tracker ----------
   var distList = document.getElementById("place-list");
   var distA = document.getElementById("dist-a");
@@ -613,6 +684,26 @@
     return { state: "bad", raw: raw };
   }
 
+  function seaLine(pa, pb) {
+    if (!SEA) return "";
+    var ra = SEA.reachable(pa), rb = SEA.reachable(pb);
+    if (!ra.viable || !rb.viable) {
+      var who = [];
+      if (!ra.viable) who.push(esc(pa.n));
+      if (!rb.viable) who.push(esc(pb.n));
+      return '<br><span class="sea-no">⚓ Not reachable by ship &mdash; ' +
+        who.join(" and ") + (who.length > 1 ? " are landlocked." : " is landlocked.") + "</span>";
+    }
+    var seaMi = SEA.route(ra.e, rb.e);
+    if (seaMi === null) {
+      return '<br><span class="sea-no">⚓ No sea route found between these coasts.</span>';
+    }
+    var total = Math.round(seaMi + ra.e.mi + rb.e.mi);
+    var days = Math.max(1, Math.round(total / 120)); // ~120 mi/day under sail
+    return '<br><span class="sea-yes">⚓ By sea: <b>~' + total + " miles</b>, roughly <b>" +
+      days + " day" + (days > 1 ? "s" : "") + "</b> by ship.</span>";
+  }
+
   function updateDistance() {
     var a = sideStatus(distA), b = sideStatus(distB);
     if (a.state === "empty" && b.state === "empty") {
@@ -628,10 +719,12 @@
       var mi = Math.round(Math.hypot(pa.x - pb.x, pa.y - pb.y) * MI_PER_PX);
       var foot = Math.max(1, Math.round(mi / 24));
       var horse = Math.max(1, Math.round(mi / 45));
-      distOut.innerHTML = "<b>" + esc(pa.n) + "</b> &rarr; <b>" + esc(pb.n) + "</b><br>" +
+      var html = "<b>" + esc(pa.n) + "</b> &rarr; <b>" + esc(pb.n) + "</b><br>" +
         '<span class="dist-big">~' + mi + " miles</span> as the crow flies<br>" +
-        "Roughly <b>" + foot + " day" + (foot > 1 ? "s" : "") + "</b> on foot or <b>" +
+        "Overland: roughly <b>" + foot + " day" + (foot > 1 ? "s" : "") + "</b> on foot or <b>" +
         horse + " day" + (horse > 1 ? "s" : "") + "</b> mounted.";
+      html += seaLine(pa, pb);
+      distOut.innerHTML = html;
       return;
     }
     var msgs = [];
