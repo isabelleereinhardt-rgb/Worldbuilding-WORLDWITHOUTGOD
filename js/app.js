@@ -119,6 +119,20 @@
     enabled[c.id] = true;
   });
 
+  // ---------- text-to-speech ----------
+  var speechOK = ("speechSynthesis" in window);
+  function speakPlace(p) {
+    if (!speechOK) return;
+    window.speechSynthesis.cancel();
+    var parts = [p.n];
+    if (p.d) parts.push(p.d);
+    var u = new SpeechSynthesisUtterance(parts.join(". "));
+    u.rate = 0.95;
+    u.pitch = 1;
+    u.lang = "en-US"; // name and description read in English; names spoken as written
+    window.speechSynthesis.speak(u);
+  }
+
   // ---------- marker construction ----------
   function viewPopupContent(p) {
     var div = document.createElement("div");
@@ -126,6 +140,15 @@
       '<div class="popup-cat">' + esc(catLabel(p.cat)) + "</div>" +
       (p.d ? '<div class="popup-desc">' + esc(p.d) + "</div>" : "");
     div.innerHTML = html;
+    if (speechOK) {
+      var sb = document.createElement("button");
+      sb.className = "pbtn audio-btn";
+      sb.type = "button";
+      sb.title = "Read aloud";
+      sb.innerHTML = "🔊 Read aloud";
+      sb.addEventListener("click", function () { speakPlace(p); });
+      div.appendChild(sb);
+    }
     if (editMode) {
       var btn = document.createElement("button");
       btn.className = "pbtn";
@@ -197,6 +220,7 @@
     });
   }
   map.on("zoomend", refreshGroups);
+  map.on("popupclose", function () { if (speechOK) window.speechSynthesis.cancel(); });
 
   // ---------- category toggle UI ----------
   var catBox = document.getElementById("cat-toggles");
@@ -316,6 +340,14 @@
       '<div class="popup-name">' + esc(best.n) + "</div>" +
       '<div class="popup-cat">' + esc(catLabel(best.cat)) + "</div>" +
       (best.d ? '<div class="popup-desc">' + esc(best.d) + "</div>" : "");
+    if (speechOK) {
+      var sb = document.createElement("button");
+      sb.className = "pbtn audio-btn";
+      sb.type = "button";
+      sb.innerHTML = "🔊 Read aloud";
+      sb.addEventListener("click", function () { speakPlace(best); });
+      div.appendChild(sb);
+    }
     var btn = document.createElement("button");
     btn.className = "pbtn";
     btn.textContent = "Go to " + best.n;

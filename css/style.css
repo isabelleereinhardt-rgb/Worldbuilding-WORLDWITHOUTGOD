@@ -230,6 +230,8 @@ input[type="range"] { flex: 1; accent-color: var(--accent); }
 button.danger { color: #e08a80; border-color: #6b3a32; }
 
 .pbtn { margin-top: 8px; margin-right: 6px; }
+.audio-btn { background: #2b4a2e; border-color: #3f6b45; }
+.audio-btn:hover { background: #3a6340; }
 
 .edit-form label { display: block; font-size: 12px; margin: 6px 0; color: #55492e; }
 .edit-form input, .edit-form select, .edit-form textarea {
