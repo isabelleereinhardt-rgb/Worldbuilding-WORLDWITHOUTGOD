@@ -7,6 +7,14 @@ built-in assistant that recognizes your characters and places as you type.
 
 Think **Notion + Google Docs + Obsidian**, built specifically for this world.
 
+### 🔗 Live site
+
+**https://isabelleereinhardt-rgb.github.io/Worldbuilding-WORLDWITHOUTGOD/**
+
+> This link goes live once GitHub Pages is turned on (**Settings → Pages → Source
+> → GitHub Actions** — see [How to open it](#how-to-open-it) below). Give the
+> first deploy a minute or two after enabling it.
+
 ---
 
 ## What's inside
