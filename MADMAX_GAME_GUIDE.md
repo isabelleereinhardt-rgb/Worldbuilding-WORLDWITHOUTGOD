@@ -102,11 +102,13 @@ src/
 │   ├── BoardManager.luau       Physical board build, movement, tile effects, traps
 │   ├── CardManager.luau        Draft, dealing, playing cards, every card effect
 │   ├── CombatManager.luau      Damage formula, targeting, reaction window, death
-│   └── PlayerDataManager.luau  HP / hand / buffs / statuses + replication
+│   ├── PlayerDataManager.luau  HP / hand / buffs / statuses + replication
+│   └── SpectatorManager.luau   Chaos Mode votes, cheer system, MVP vote, cosmetic FX
 └── client/                     (StarterPlayerScripts/Client)
     ├── init.client.luau        Event handling, hand clicks, targeting, spectate
     ├── UI.luau                 Full HUD built in code (wasteland-themed)
-    └── CameraController.luau   Board-game camera (follow + zoom, spectator)
+    ├── CameraController.luau   Board-game camera (follow + zoom, spectator, shake)
+    └── Effects.luau            Hit flashes, particle bursts, screen shake, sound
 ```
 
 ## 🔧 Design decisions worth knowing
@@ -122,11 +124,34 @@ src/
 - **Board logic is data, visuals are generated.** `TileDatabase` is the truth;
   `BoardManager.buildBoard()` constructs the parts at runtime, so re-theming zones
   or moving special tiles is a data edit.
+- **Sound IDs are placeholders, not guesses.** `src/shared/SoundIds.luau` ships
+  every trigger point wired up but with `id = 0` — a fabricated Roblox catalog
+  ID would be unverifiable and might silently fail or play the wrong sound.
+  Fill them in from Studio's Toolbox (search terms are listed per entry);
+  `Effects.luau` just skips playback for anything still at 0.
+
+## 👻 Spectator features (Phase 2)
+
+Dead players get a spectator panel instead of a card hand:
+
+- **Free camera / Follow** — click any alive player's row to lock the camera to them
+- **Cheer** — costs a 5s cooldown, gives you 10 Scrap and the cheered player 5 Scrap
+- **MVP vote** — a popularity vote shown as "🔮 Crowd Favorite" on the final scoreboard
+  (flavor only — doesn't affect the real MVP stat, which is kills/damage-based)
+- **Chaos Mode vote** — every 60 seconds, 3 random modifiers are put to a vote for
+  15 seconds: double trap damage, +2 movement, halved healing, an extra card for
+  everyone, or a random Rare card. The winner is applied live and shown in a
+  strip under the match timer with a countdown.
+- **Cosmetic Chaos FX** — a "for fun" button dead players can hit anytime (3s
+  cooldown) that fires a harmless particle burst on their old character — no
+  gameplay effect, per the design doc's "cosmetic-only chaos events."
 
 ## 🗺 Roadmap (from the design doc)
 
-- ✅ **Phase 1 — Core MVP** (this)
-- ⬜ **Phase 2 — Polish & Spectator:** chaos-mode voting, cheering, card VFX/SFX
+- ✅ **Phase 1 — Core MVP**
+- ✅ **Phase 2 — Polish & Spectator:** chaos-mode voting, cheering, MVP vote,
+  card VFX (hit flashes, particle bursts, screen shake), sound-trigger
+  architecture (asset IDs left as documented placeholders — see above)
 - ⬜ **Phase 3 — Economy:** DataStore persistence for Scrap, crafting, daily challenges
 - ⬜ **Phase 4 — Monetization:** card packs and gamepasses
 

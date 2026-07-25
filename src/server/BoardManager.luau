@@ -11,6 +11,7 @@ local Config = require(Shared.Config)
 local TileDatabase = require(Shared.TileDatabase)
 local Remotes = require(Shared.Remotes)
 local PlayerDataManager = require(script.Parent.PlayerDataManager)
+local SpectatorManager = require(script.Parent.SpectatorManager)
 
 type PlayerState = PlayerDataManager.PlayerState
 
@@ -290,7 +291,8 @@ function BoardManager.applyTileEffect(state: PlayerState)
 	end
 
 	if tile.type == "Heal" then
-		local amount = math.random(tile.healMin :: number, tile.healMax :: number) * multiplier
+		local amount = math.random(tile.healMin :: number, tile.healMax :: number)
+			* multiplier * SpectatorManager.getHealMultiplier()
 		state.hp = math.min(state.hp + amount, state.maxHp)
 		Remotes.get("TileEffectTriggered"):FireAllClients(state.userId, tile.index, "Heal", amount)
 	elseif tile.type == "Damage" then
@@ -307,7 +309,7 @@ function BoardManager.applyTileEffect(state: PlayerState)
 			Remotes.get("ActionFeed"):FireAllClients(`{state.player.Name} nitro-dodged a trap!`)
 		else
 			armedTiles[tile.index] = nil
-			local damage = math.random(10, 20)
+			local damage = math.floor(math.random(10, 20) * SpectatorManager.getTrapDamageMultiplier())
 			Remotes.get("TrapTriggered"):FireAllClients(tile.index, state.userId, "Environmental")
 			task.delay(1, function()
 				if state.alive then

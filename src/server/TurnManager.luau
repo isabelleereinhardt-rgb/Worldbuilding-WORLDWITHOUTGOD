@@ -10,6 +10,7 @@ local Config = require(Shared.Config)
 local Remotes = require(Shared.Remotes)
 local PlayerDataManager = require(script.Parent.PlayerDataManager)
 local BoardManager = require(script.Parent.BoardManager)
+local SpectatorManager = require(script.Parent.SpectatorManager)
 
 type PlayerState = PlayerDataManager.PlayerState
 
@@ -122,6 +123,8 @@ local function runGroupTurn(group: number)
 			roll += nitro.bonusMove
 			nitro.bonusMove = nil
 		end
+		-- Chaos Mode: "All movement +2 tiles this round"
+		roll += SpectatorManager.getMovementBonus()
 		rolls[state] = roll
 		Remotes.get("DiceRolled"):FireAllClients(state.userId, roll)
 	end

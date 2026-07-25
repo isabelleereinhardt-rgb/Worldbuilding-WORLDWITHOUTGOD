@@ -63,12 +63,20 @@ local Config = {
 	SCRAP_MATCH_MIN = 50,
 	SCRAP_MATCH_MAX = 100,
 	SCRAP_PER_BURNED_CARD = 5,
+	SCRAP_CHEER_BONUS = 10, -- Scrap the cheering spectator earns
+	SCRAP_CHEER_TARGET_BONUS = 5, -- Scrap the cheered player earns
 
 	-- Board build (visual layout: snake pattern)
 	TILES_PER_ROW = 10,
 	TILE_SIZE = 12, -- studs, square tiles
 	TILE_GAP = 2,
 	TILE_HEIGHT = 1,
+
+	-- Spectator: Chaos Mode voting
+	CHAOS_VOTE_INTERVAL = 60, -- seconds between votes
+	CHAOS_VOTE_DURATION = 15, -- seconds spectators have to vote
+	CHAOS_OPTIONS_SHOWN = 3, -- options offered per vote
+	CHEER_COOLDOWN = 5, -- seconds between cheers from the same spectator
 }
 
 return Config

@@ -83,6 +83,13 @@ export type HUDRefs = {
 	scoreboardList: Frame,
 	scoreboardTitle: TextLabel,
 	lobbyLabel: TextLabel,
+	spectatorFrame: Frame,
+	spectatorList: Frame,
+	cosmeticButton: TextButton,
+	chaosVoteFrame: Frame,
+	chaosVoteTitle: TextLabel,
+	chaosVoteOptions: Frame,
+	modifiersStrip: TextLabel,
 }
 
 function UI.build(): HUDRefs
@@ -304,6 +311,88 @@ function UI.build(): HUDRefs
 	lobbyLabel.TextColor3 = COLORS.accent
 	lobbyLabel.Text = "🎴 MAD MAX: WASTELAND BRAWL — waiting for warriors..."
 
+	----------------------------------------------------------------
+	-- Active Chaos Mode modifiers strip (top, below the timer)
+	----------------------------------------------------------------
+	local modifiersStrip = makeLabel(gui, "Modifiers", 16)
+	modifiersStrip.AnchorPoint = Vector2.new(0.5, 0)
+	modifiersStrip.Position = UDim2.new(0.5, 0, 0, 56)
+	modifiersStrip.Size = UDim2.new(0, 600, 0, 20)
+	modifiersStrip.TextColor3 = COLORS.rust
+	modifiersStrip.Font = Enum.Font.SourceSansBold
+	modifiersStrip.Text = ""
+
+	----------------------------------------------------------------
+	-- Spectator panel: replaces the hand when dead
+	-- (Free camera, Follow/Cheer/MVP-vote per alive player, cosmetic FX)
+	----------------------------------------------------------------
+	local spectatorFrame = makePanel(gui, "Spectator")
+	spectatorFrame.AnchorPoint = Vector2.new(0.5, 1)
+	spectatorFrame.Position = UDim2.new(0.5, 0, 1, -10)
+	spectatorFrame.Size = UDim2.new(0, 420, 0, 220)
+	spectatorFrame.Visible = false
+
+	local spectatorTitle = makeLabel(spectatorFrame, "Title", 22)
+	spectatorTitle.Size = UDim2.new(1, 0, 0, 28)
+	spectatorTitle.Text = "👻 SPECTATING — click a name to follow"
+
+	local spectatorList = Instance.new("ScrollingFrame")
+	spectatorList.Name = "List"
+	spectatorList.Position = UDim2.new(0, 8, 0, 30)
+	spectatorList.Size = UDim2.new(1, -16, 1, -76)
+	spectatorList.BackgroundTransparency = 1
+	spectatorList.BorderSizePixel = 0
+	spectatorList.ScrollBarThickness = 4
+	spectatorList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	spectatorList.CanvasSize = UDim2.new(0, 0, 0, 0)
+	spectatorList.Parent = spectatorFrame
+	local spectatorLayout = Instance.new("UIListLayout")
+	spectatorLayout.Padding = UDim.new(0, 4)
+	spectatorLayout.Parent = spectatorList
+
+	local cosmeticButton = Instance.new("TextButton")
+	cosmeticButton.Name = "Cosmetic"
+	cosmeticButton.AnchorPoint = Vector2.new(0.5, 1)
+	cosmeticButton.Position = UDim2.new(0.5, 0, 1, -8)
+	cosmeticButton.Size = UDim2.new(0, 260, 0, 32)
+	cosmeticButton.BackgroundColor3 = COLORS.rust
+	cosmeticButton.Font = Enum.Font.Bangers
+	cosmeticButton.TextSize = 18
+	cosmeticButton.TextColor3 = COLORS.text
+	cosmeticButton.Text = "🎉 Trigger Chaos FX (for fun)"
+	cosmeticButton.AutoButtonColor = true
+	local cosmeticCorner = Instance.new("UICorner")
+	cosmeticCorner.CornerRadius = UDim.new(0, 6)
+	cosmeticCorner.Parent = cosmeticButton
+	cosmeticButton.Parent = spectatorFrame
+
+	----------------------------------------------------------------
+	-- Chaos Mode vote overlay (spectators only, every 60s)
+	----------------------------------------------------------------
+	local chaosVoteFrame = makePanel(gui, "ChaosVote")
+	chaosVoteFrame.AnchorPoint = Vector2.new(0.5, 0)
+	chaosVoteFrame.Position = UDim2.new(0.5, 0, 0, 110)
+	chaosVoteFrame.Size = UDim2.new(0, 460, 0, 160)
+	chaosVoteFrame.Visible = false
+	chaosVoteFrame.ZIndex = 4
+
+	local chaosVoteTitle = makeLabel(chaosVoteFrame, "Title", 22)
+	chaosVoteTitle.Size = UDim2.new(1, 0, 0, 30)
+	chaosVoteTitle.TextColor3 = COLORS.accent
+	chaosVoteTitle.Text = "🗳 CHAOS MODE VOTE"
+	chaosVoteTitle.ZIndex = 4
+
+	local chaosVoteOptions = Instance.new("Frame")
+	chaosVoteOptions.Name = "Options"
+	chaosVoteOptions.Position = UDim2.new(0, 10, 0, 34)
+	chaosVoteOptions.Size = UDim2.new(1, -20, 1, -44)
+	chaosVoteOptions.BackgroundTransparency = 1
+	chaosVoteOptions.ZIndex = 4
+	chaosVoteOptions.Parent = chaosVoteFrame
+	local chaosOptionsLayout = Instance.new("UIListLayout")
+	chaosOptionsLayout.Padding = UDim.new(0, 6)
+	chaosOptionsLayout.Parent = chaosVoteOptions
+
 	return {
 		gui = gui,
 		timerLabel = timerLabel,
@@ -326,7 +415,60 @@ function UI.build(): HUDRefs
 		scoreboardList = scoreboardList,
 		scoreboardTitle = scoreboardTitle,
 		lobbyLabel = lobbyLabel,
+		spectatorFrame = spectatorFrame,
+		spectatorList = spectatorList,
+		cosmeticButton = cosmeticButton,
+		chaosVoteFrame = chaosVoteFrame,
+		chaosVoteTitle = chaosVoteTitle,
+		chaosVoteOptions = chaosVoteOptions,
+		modifiersStrip = modifiersStrip,
 	}
+end
+
+-- One row in the spectator panel for an alive player: name/HP + Follow/Cheer/MVP buttons.
+function UI.makeSpectatorRow(name: string, hp: number, maxHp: number): (Frame, TextButton, TextButton, TextButton)
+	local row = Instance.new("Frame")
+	row.Name = name
+	row.Size = UDim2.new(1, 0, 0, 30)
+	row.BackgroundColor3 = Color3.fromRGB(28, 24, 20)
+	row.BackgroundTransparency = 0.2
+	row.BorderSizePixel = 0
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 5)
+	corner.Parent = row
+
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Position = UDim2.new(0, 8, 0, 0)
+	nameLabel.Size = UDim2.new(0.4, 0, 1, 0)
+	nameLabel.Font = Enum.Font.SourceSansBold
+	nameLabel.TextSize = 15
+	nameLabel.TextColor3 = COLORS.text
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+	nameLabel.Text = `{name} ❤{hp}/{maxHp}`
+	nameLabel.Parent = row
+
+	local function smallButton(text: string, xScale: number): TextButton
+		local button = Instance.new("TextButton")
+		button.Size = UDim2.new(0.2, -4, 0.8, 0)
+		button.Position = UDim2.new(xScale, 0, 0.1, 0)
+		button.BackgroundColor3 = COLORS.panelBorder
+		button.Font = Enum.Font.SourceSansBold
+		button.TextSize = 13
+		button.TextColor3 = COLORS.text
+		button.Text = text
+		local btnCorner = Instance.new("UICorner")
+		btnCorner.CornerRadius = UDim.new(0, 4)
+		btnCorner.Parent = button
+		button.Parent = row
+		return button
+	end
+
+	local followButton = smallButton("📷 Follow", 0.4)
+	local cheerButton = smallButton("📣 Cheer", 0.6)
+	local mvpButton = smallButton("⭐ MVP", 0.8)
+
+	return row, followButton, cheerButton, mvpButton
 end
 
 -- A clickable card frame used in both the hand and the draft grid.

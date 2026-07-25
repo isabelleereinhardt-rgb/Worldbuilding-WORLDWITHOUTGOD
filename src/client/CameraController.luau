@@ -15,6 +15,30 @@ local LERP_SPEED = 4
 local enabled = false
 local connection: RBXScriptConnection? = nil
 
+-- Screen shake (hits, explosions, deaths): decays linearly over `shakeDuration`.
+local shakeMagnitude = 0
+local shakeStartTime = 0
+local shakeDuration = 0
+
+function CameraController.shake(magnitude: number, duration: number)
+	shakeMagnitude = magnitude
+	shakeStartTime = os.clock()
+	shakeDuration = duration
+end
+
+local function shakeOffset(): Vector3
+	if shakeDuration <= 0 then
+		return Vector3.zero
+	end
+	local elapsed = os.clock() - shakeStartTime
+	if elapsed >= shakeDuration then
+		return Vector3.zero
+	end
+	local falloff = 1 - (elapsed / shakeDuration)
+	local m = shakeMagnitude * falloff
+	return Vector3.new((math.random() - 0.5) * m, (math.random() - 0.5) * m, 0)
+end
+
 function CameraController.enable()
 	if enabled then
 		return
@@ -33,6 +57,7 @@ function CameraController.enable()
 		local offset = moving and MOVE_OFFSET or FOLLOW_OFFSET
 		local targetCFrame = CFrame.lookAt(hrp.Position + offset, hrp.Position)
 		camera.CFrame = camera.CFrame:Lerp(targetCFrame, math.clamp(dt * LERP_SPEED, 0, 1))
+			* CFrame.new(shakeOffset())
 	end)
 end
 
@@ -62,6 +87,7 @@ function CameraController.followCharacter(character: Model?)
 		end
 		local targetCFrame = CFrame.lookAt(hrp.Position + FOLLOW_OFFSET, hrp.Position)
 		camera.CFrame = camera.CFrame:Lerp(targetCFrame, math.clamp(dt * LERP_SPEED, 0, 1))
+			* CFrame.new(shakeOffset())
 	end)
 	enabled = true
 end

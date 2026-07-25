@@ -13,6 +13,7 @@ local BoardManager = require(script.BoardManager)
 local CombatManager = require(script.CombatManager)
 local CardManager = require(script.CardManager)
 local TurnManager = require(script.TurnManager)
+local SpectatorManager = require(script.SpectatorManager)
 local GameManager = require(script.GameManager)
 
 Remotes.init()
@@ -42,6 +43,10 @@ CardManager.inject({
 TurnManager.inject({
 	playCard = CardManager.playCard,
 	checkWinConditions = GameManager.checkWinConditions,
+})
+
+SpectatorManager.inject({
+	giveCards = CardManager.giveCards,
 })
 
 ----------------------------------------------------------------
@@ -97,6 +102,43 @@ Remotes.get("RequestReaction").OnServerEvent:Connect(function(player, handIndex)
 		state.cardsPlayed += 1
 		PlayerDataManager.sendHand(state)
 		PlayerDataManager.broadcastStats()
+	end
+end)
+
+Remotes.get("RequestChaosVote").OnServerEvent:Connect(function(player, eventId)
+	if typeof(eventId) ~= "string" then
+		return
+	end
+	local state = PlayerDataManager.get(player.UserId)
+	if state then
+		SpectatorManager.registerChaosVote(state, eventId)
+	end
+end)
+
+Remotes.get("RequestCheer").OnServerEvent:Connect(function(player, targetUserId)
+	if typeof(targetUserId) ~= "number" then
+		return
+	end
+	local state = PlayerDataManager.get(player.UserId)
+	if state then
+		SpectatorManager.cheer(state, targetUserId)
+	end
+end)
+
+Remotes.get("RequestMVPVote").OnServerEvent:Connect(function(player, targetUserId)
+	if typeof(targetUserId) ~= "number" then
+		return
+	end
+	local state = PlayerDataManager.get(player.UserId)
+	if state then
+		SpectatorManager.registerMVPVote(state, targetUserId)
+	end
+end)
+
+Remotes.get("RequestCosmeticChaos").OnServerEvent:Connect(function(player)
+	local state = PlayerDataManager.get(player.UserId)
+	if state then
+		SpectatorManager.triggerCosmetic(state)
 	end
 end)
 

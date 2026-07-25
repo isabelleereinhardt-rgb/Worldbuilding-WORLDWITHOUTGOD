@@ -11,6 +11,7 @@ local Remotes = require(Shared.Remotes)
 local PlayerDataManager = require(script.Parent.PlayerDataManager)
 local BoardManager = require(script.Parent.BoardManager)
 local CombatManager = require(script.Parent.CombatManager)
+local SpectatorManager = require(script.Parent.SpectatorManager)
 
 type PlayerState = PlayerDataManager.PlayerState
 
@@ -317,11 +318,12 @@ function CardManager.executeEffect(state: PlayerState, card: CardDatabase.Card, 
 		end
 
 	elseif effectType == "heal" then
-		state.hp = math.min(state.hp + (effect.amount :: number), state.maxHp)
+		local amount = math.floor((effect.amount :: number) * SpectatorManager.getHealMultiplier())
+		state.hp = math.min(state.hp + amount, state.maxHp)
 		if effect.draw then
 			CardManager.drawCards(state, effect.draw :: number)
 		end
-		Remotes.get("ActionFeed"):FireAllClients(`💚 {state.player.Name} healed {effect.amount} HP with {card.name}`)
+		Remotes.get("ActionFeed"):FireAllClients(`💚 {state.player.Name} healed {amount} HP with {card.name}`)
 
 	elseif effectType == "conditionalHeal" then
 		state.hp = math.max(state.hp, effect.healTo :: number)
@@ -467,20 +469,21 @@ function CardManager.executeTrapCard(cardId: string, victim: PlayerState, tileIn
 	end
 	local effect = card.effect
 	local owner = nil -- environmental credit handled by CombatManager via status source
+	local damage = math.floor((effect.damage :: number) * SpectatorManager.getTrapDamageMultiplier())
 
 	if effect.aoeRadius then
 		local victims = CombatManager.getPlayersInRadius(tileIndex, effect.aoeRadius :: number, nil)
 		for _, aoeVictim in victims do
-			if (effect.damage :: number) > 0 then
-				CombatManager.applyDamage(aoeVictim, effect.damage :: number, owner)
+			if damage > 0 then
+				CombatManager.applyDamage(aoeVictim, damage, owner)
 			end
 			if effect.status then
 				CombatManager.applyStatusFromSpec(aoeVictim, effect.status :: { [string]: any }, nil)
 			end
 		end
 	else
-		if (effect.damage :: number) > 0 then
-			CombatManager.applyDamage(victim, effect.damage :: number, owner)
+		if damage > 0 then
+			CombatManager.applyDamage(victim, damage, owner)
 		end
 		if effect.status and victim.alive then
 			CombatManager.applyStatusFromSpec(victim, effect.status :: { [string]: any }, nil)

@@ -22,14 +22,27 @@ local EVENT_NAMES = {
 	"TrapPlaced",         -- (tileIndex: number?, targetUserId: number?, cardId: string, ownerUserId: number)
 	"TrapTriggered",      -- (tileIndex: number?, victimUserId: number, cardId: string)
 	"PlayerDied",         -- (victimUserId: number, killerUserId: number?)
-	"MatchEnded",         -- (results: {winnerUserId, reason, scoreboard})
+	"MatchEnded",         -- (results: {winnerUserId, reason, scoreboard, crowdFavorite})
 	"ActionFeed",         -- (message: string)
+
+	-- Spectator: Server -> Client
+	"ChaosVoteOptions",   -- (options: {id, label}[], timeLeft: number)
+	"ChaosVoteResult",    -- (eventId: string, label: string, voteCounts: {[id]: number})
+	"ChaosModifiersUpdate", -- (modifiers: {id, label, timeLeft}[])
+	"CosmeticChaosTriggered", -- (userId: number) -- purely visual, spectator-triggered
+	"MVPVoteUpdate",      -- (voteCounts: {[userId]: number})
 
 	-- Client -> Server
 	"RequestDraftPick",   -- (cardId: string)
 	"RequestPlayCard",    -- (handIndex: number, targetUserId: number?, tileIndex: number?)
 	"RequestReaction",    -- (handIndex: number)
 	"RequestBranchChoice",-- (choice: string)  reserved for branching paths
+
+	-- Spectator: Client -> Server
+	"RequestChaosVote",   -- (eventId: string)
+	"RequestCheer",       -- (targetUserId: number)
+	"RequestMVPVote",     -- (targetUserId: number)
+	"RequestCosmeticChaos", -- () -- dead players only, cooldown enforced server-side
 }
 
 local Remotes = {}

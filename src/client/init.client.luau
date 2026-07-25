@@ -12,6 +12,7 @@ local Remotes = require(Shared.Remotes)
 
 local UI = require(script.UI)
 local CameraController = require(script.CameraController)
+local Effects = require(script.Effects)
 
 local localPlayer = Players.LocalPlayer
 local hud = UI.build()
@@ -40,6 +41,15 @@ local STATUS_ICONS: { [string]: string } = {
 ----------------------------------------------------------------
 -- Helpers
 ----------------------------------------------------------------
+
+local function getTilePosition(tileIndex: number): Vector3?
+	local board = workspace:FindFirstChild("GameBoard")
+	local part = board and board:FindFirstChild(`Tile_{tileIndex}`)
+	if part and part:IsA("BasePart") then
+		return part.Position + Vector3.new(0, 2, 0)
+	end
+	return nil
+end
 
 local function formatTime(seconds: number): string
 	local minutes = math.floor(seconds / 60)
@@ -237,6 +247,49 @@ local function updateOverheads()
 end
 
 ----------------------------------------------------------------
+-- Spectator panel (dead players): Follow / Cheer / MVP vote rows
+----------------------------------------------------------------
+local COSMETIC_COOLDOWN = 3
+local cosmeticReadyAt = 0
+
+local function renderSpectatorList()
+	for _, child in hud.spectatorList:GetChildren() do
+		if child:IsA("Frame") then
+			child:Destroy()
+		end
+	end
+	for userIdStr, stats in latestStats do
+		local userId = tonumber(userIdStr) :: number
+		if stats.alive and userId ~= localPlayer.UserId then
+			local row, followButton, cheerButton, mvpButton = UI.makeSpectatorRow(stats.name, stats.hp, stats.maxHp)
+			followButton.Activated:Connect(function()
+				local targetPlayer = Players:GetPlayerByUserId(userId)
+				if targetPlayer and targetPlayer.Character then
+					CameraController.followCharacter(targetPlayer.Character)
+				end
+			end)
+			cheerButton.Activated:Connect(function()
+				Remotes.get("RequestCheer"):FireServer(userId)
+				Effects.cheered()
+			end)
+			mvpButton.Activated:Connect(function()
+				Remotes.get("RequestMVPVote"):FireServer(userId)
+			end)
+			row.Parent = hud.spectatorList
+		end
+	end
+end
+
+hud.cosmeticButton.Activated:Connect(function()
+	if os.clock() < cosmeticReadyAt then
+		return
+	end
+	cosmeticReadyAt = os.clock() + COSMETIC_COOLDOWN
+	Remotes.get("RequestCosmeticChaos"):FireServer()
+	Effects.buttonClick()
+end)
+
+----------------------------------------------------------------
 -- Remote event handlers
 ----------------------------------------------------------------
 
@@ -247,6 +300,11 @@ Remotes.get("GameStateChanged").OnClientEvent:Connect(function(state: string)
 	if state == "Lobby" then
 		isDead = false
 		hud.scoreboardFrame.Visible = false
+		hud.spectatorFrame.Visible = false
+		hud.chaosVoteFrame.Visible = false
+		hud.modifiersStrip.Text = ""
+		hud.handFrame.Visible = true
+		hud.handCountLabel.Visible = true
 		currentHand = {}
 		renderHand()
 		CameraController.enable()
@@ -334,6 +392,9 @@ Remotes.get("PlayerStatsUpdate").OnClientEvent:Connect(function(snapshot)
 		end
 	end
 	updateOverheads()
+	if isDead then
+		renderSpectatorList()
+	end
 end)
 
 Remotes.get("TurnPhaseUpdate").OnClientEvent:Connect(function(groupIndex: number, phase: string, timeLeft: number, myTurn: boolean)
@@ -371,6 +432,7 @@ end)
 Remotes.get("DiceRolled").OnClientEvent:Connect(function(userId: number, roll: number)
 	local player = Players:GetPlayerByUserId(userId)
 	local name = player and player.Name or "?"
+	Effects.diceRolled()
 	if userId == localPlayer.UserId then
 		addFeedLine(`🎲 You rolled a {roll}!`)
 	else
@@ -395,8 +457,28 @@ Remotes.get("ActionFeed").OnClientEvent:Connect(addFeedLine)
 Remotes.get("CardPlayed").OnClientEvent:Connect(function(userId: number, cardId: string)
 	local player = Players:GetPlayerByUserId(userId)
 	local card = CardDatabase.get(cardId)
+	Effects.cardPlayed()
 	if player and card and userId ~= localPlayer.UserId then
 		addFeedLine(`🃏 {player.Name} played {card.name}`)
+	end
+end)
+
+Remotes.get("CombatResult").OnClientEvent:Connect(function(info)
+	if info.result == "Hit" or info.result == "Reflected" then
+		Effects.attackHit(info.defender, info.damage or 0)
+	elseif info.result == "Countered" then
+		Effects.countered(info.defender)
+	elseif info.result == "Dodged" or info.result == "Cancelled" or info.result == "Blocked" then
+		Effects.dodged(info.defender)
+	end
+end)
+
+Remotes.get("TrapTriggered").OnClientEvent:Connect(function(tileIndex: number?, _victimUserId: number)
+	if tileIndex then
+		local position = getTilePosition(tileIndex)
+		if position then
+			Effects.trapTriggered(position)
+		end
 	end
 end)
 
@@ -404,6 +486,7 @@ Remotes.get("TileEffectTriggered").OnClientEvent:Connect(function(userId: number
 	if userId == localPlayer.UserId then
 		if effectType == "Heal" then
 			addFeedLine(`💚 Tile {tileIndex}: healed {value} HP`)
+			Effects.healed(userId)
 		elseif effectType == "Damage" then
 			addFeedLine(`💥 Tile {tileIndex}: took {value} damage`)
 		elseif effectType == "BonusCard" then
@@ -413,9 +496,14 @@ Remotes.get("TileEffectTriggered").OnClientEvent:Connect(function(userId: number
 end)
 
 Remotes.get("PlayerDied").OnClientEvent:Connect(function(victimUserId: number)
+	Effects.playerDied(victimUserId)
 	if victimUserId == localPlayer.UserId then
 		isDead = true
-		addFeedLine("👻 You died! Spectating — click a player to follow them.")
+		addFeedLine("👻 You died! Spectating — Follow, Cheer, or vote MVP below.")
+		hud.handFrame.Visible = false
+		hud.handCountLabel.Visible = false
+		hud.spectatorFrame.Visible = true
+		renderSpectatorList()
 		-- Spectate the first alive player
 		for userIdStr, stats in latestStats do
 			if stats.alive and userIdStr ~= tostring(localPlayer.UserId) then
@@ -433,6 +521,7 @@ Remotes.get("MatchEnded").OnClientEvent:Connect(function(results)
 	hud.scoreboardFrame.Visible = true
 	hud.phaseBanner.Visible = false
 	hud.scoreboardTitle.Text = `🏆 {results.winnerName} WINS — {results.reason}`
+	Effects.victory()
 	for _, child in hud.scoreboardList:GetChildren() do
 		if child:IsA("TextLabel") then
 			child:Destroy()
@@ -454,6 +543,87 @@ Remotes.get("MatchEnded").OnClientEvent:Connect(function(results)
 			break
 		end
 	end
+	if results.crowdFavorite then
+		local crowdLine = Instance.new("TextLabel")
+		crowdLine.Size = UDim2.new(1, 0, 0, 26)
+		crowdLine.BackgroundTransparency = 1
+		crowdLine.Font = Enum.Font.SourceSansItalic
+		crowdLine.TextSize = 16
+		crowdLine.TextXAlignment = Enum.TextXAlignment.Left
+		crowdLine.TextColor3 = Color3.fromRGB(200, 190, 175)
+		crowdLine.Text = `🔮 Crowd Favorite: {results.crowdFavorite}`
+		crowdLine.LayoutOrder = 99
+		crowdLine.Parent = hud.scoreboardList
+	end
+	hud.spectatorFrame.Visible = false
+	hud.chaosVoteFrame.Visible = false
+end)
+
+----------------------------------------------------------------
+-- Chaos Mode voting + active modifiers
+----------------------------------------------------------------
+
+Remotes.get("ChaosVoteOptions").OnClientEvent:Connect(function(options: { { id: string, label: string } }, timeLeft: number)
+	hud.chaosVoteFrame.Visible = true
+	hud.chaosVoteTitle.Text = `🗳 CHAOS MODE VOTE ({timeLeft}s) — spectators pick one`
+	Effects.chaosVoteOpened()
+	for _, child in hud.chaosVoteOptions:GetChildren() do
+		if child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+	local voted = false
+	for _, option in options do
+		local button = Instance.new("TextButton")
+		button.Size = UDim2.new(1, 0, 0, 32)
+		button.BackgroundColor3 = Color3.fromRGB(60, 50, 40)
+		button.Font = Enum.Font.SourceSansBold
+		button.TextSize = 15
+		button.TextWrapped = true
+		button.TextColor3 = Color3.fromRGB(235, 225, 205)
+		button.Text = option.label
+		button.ZIndex = 4
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0, 5)
+		corner.Parent = button
+		button.Activated:Connect(function()
+			if voted or not isDead then
+				return
+			end
+			voted = true
+			Remotes.get("RequestChaosVote"):FireServer(option.id)
+			for _, other in hud.chaosVoteOptions:GetChildren() do
+				if other:IsA("TextButton") then
+					other.BackgroundTransparency = other == button and 0 or 0.6
+				end
+			end
+		end)
+		button.Parent = hud.chaosVoteOptions
+	end
+	task.delay(timeLeft, function()
+		hud.chaosVoteFrame.Visible = false
+	end)
+end)
+
+Remotes.get("ChaosVoteResult").OnClientEvent:Connect(function(_eventId: string, label: string)
+	hud.chaosVoteFrame.Visible = false
+	addFeedLine(`🗳 CHAOS MODE: {label}`)
+end)
+
+Remotes.get("ChaosModifiersUpdate").OnClientEvent:Connect(function(list: { { label: string, timeLeft: number } })
+	if #list == 0 then
+		hud.modifiersStrip.Text = ""
+		return
+	end
+	local parts = {}
+	for _, mod in list do
+		table.insert(parts, `⚡ {mod.label} ({mod.timeLeft}s)`)
+	end
+	hud.modifiersStrip.Text = table.concat(parts, "   ")
+end)
+
+Remotes.get("CosmeticChaosTriggered").OnClientEvent:Connect(function(userId: number)
+	Effects.cosmeticChaos(userId)
 end)
 
 print("[MadMax] Client controller ready.")

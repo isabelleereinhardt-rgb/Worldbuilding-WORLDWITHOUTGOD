@@ -15,6 +15,7 @@ local BoardManager = require(script.Parent.BoardManager)
 local CardManager = require(script.Parent.CardManager)
 local CombatManager = require(script.Parent.CombatManager)
 local TurnManager = require(script.Parent.TurnManager)
+local SpectatorManager = require(script.Parent.SpectatorManager)
 
 type PlayerState = PlayerDataManager.PlayerState
 
@@ -72,6 +73,7 @@ local function endMatch(winner: PlayerState?, reason: string)
 	end
 	matchOver = true
 	TurnManager.stop()
+	SpectatorManager.stop()
 
 	-- Match completion Scrap for everyone
 	for _, state in PlayerDataManager.getAll() do
@@ -85,6 +87,7 @@ local function endMatch(winner: PlayerState?, reason: string)
 		winnerName = winner and winner.player.Name or "Nobody",
 		reason = reason,
 		scoreboard = scoreboard,
+		crowdFavorite = SpectatorManager.getCrowdFavoriteName(),
 	})
 	Remotes.get("ActionFeed"):FireAllClients(
 		winner and `🏆 {winner.player.Name} wins — {reason}!` or `🏆 Match over — {reason}`)
@@ -142,6 +145,7 @@ function GameManager.returnToLobby()
 	matchOver = false
 	PlayerDataManager.clearAll()
 	BoardManager.resetTraps()
+	SpectatorManager.resetMVPVotes()
 	setState("Lobby")
 	GameManager.tryStartCountdown()
 end
@@ -195,6 +199,7 @@ function GameManager.startMatch()
 	matchEndTime = os.clock() + Config.MATCH_DURATION
 	setState("Playing")
 	TurnManager.start()
+	SpectatorManager.start()
 
 	-- Match timer broadcast
 	task.spawn(function()
@@ -231,6 +236,7 @@ RunService.Heartbeat:Connect(function(dt)
 	if statsAccumulator >= 1 then
 		statsAccumulator = 0
 		PlayerDataManager.broadcastStats()
+		SpectatorManager.broadcastActiveModifiers()
 	end
 end)
 
