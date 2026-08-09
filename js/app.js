@@ -357,21 +357,31 @@
     showNearest(e.latlng);
   });
 
+  function isVisiblePlace(p) {
+    return enabled[p.cat] && !(p.cat === "town" && map.getZoom() < TOWN_MIN_ZOOM);
+  }
+
   function showNearest(latlng) {
     var xy = xyOf(latlng);
     if (xy.x < -50 || xy.x > W + 50 || xy.y < -50 || xy.y > H + 50) return;
+    // find the nearest currently-visible marker
     var best = null, bestD = Infinity;
     mergedPlaces().forEach(function (p) {
+      if (!isVisiblePlace(p)) return;
       var dx = p.x - xy.x, dy = p.y - xy.y;
-      var d = Math.sqrt(dx * dx + dy * dy);
+      var d = dx * dx + dy * dy;
       if (d < bestD) { bestD = d; best = p; }
     });
     if (!best) return;
-    var mi = Math.round(bestD * MI_PER_PX);
+    // only identify a place if the click landed near its marker on screen;
+    // clicks in open space just pan/explore without a popup.
+    var markPt = map.latLngToContainerPoint(ll(best.x, best.y));
+    var clickPt = map.latLngToContainerPoint(latlng);
+    if (markPt.distanceTo(clickPt) > 55) return;
+
+    // show the place's own info, anchored on its marker (not the click point)
     var div = document.createElement("div");
-    div.innerHTML = '<div class="popup-cat">Nearest place ' +
-      (mi <= 1 ? "(here)" : "&mdash; about " + mi + " mi away") + "</div>" +
-      '<div class="popup-name">' + esc(best.n) + "</div>" +
+    div.innerHTML = '<div class="popup-name">' + esc(best.n) + "</div>" +
       '<div class="popup-cat">' + esc(catLabel(best.cat)) + "</div>" +
       (best.d ? '<div class="popup-desc">' + esc(best.d) + "</div>" : "");
     if (speechOK) {
@@ -382,11 +392,6 @@
       sb.addEventListener("click", function () { speakPlace(best); });
       div.appendChild(sb);
     }
-    var btn = document.createElement("button");
-    btn.className = "pbtn";
-    btn.textContent = "Go to " + best.n;
-    btn.addEventListener("click", function () { map.closePopup(); goTo(best); });
-    div.appendChild(btn);
     var mrow = document.createElement("div");
     mrow.className = "popup-measure";
     var startB = document.createElement("button");
@@ -399,7 +404,7 @@
     endB.addEventListener("click", function () { setDistanceEndpoint("b", best); map.closePopup(); });
     mrow.appendChild(startB); mrow.appendChild(endB);
     div.appendChild(mrow);
-    L.popup().setLatLng(latlng).setContent(div).openOn(map);
+    L.popup().setLatLng(ll(best.x, best.y)).setContent(div).openOn(map);
   }
 
   // fill a distance-tracker endpoint from a clicked place and open the panel
