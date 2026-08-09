@@ -110,6 +110,39 @@
     return 9;
   }
 
+  // ---------- duplicate-name disambiguation ----------
+  // Two places can legitimately share a name (e.g. the two Anyes). Give each a
+  // unique display label so the search list and distance pickers aren't ambiguous.
+  function kingdomCapitalXY(k) {
+    var cap = null;
+    if (typeof KINGDOMS !== "undefined") {
+      KINGDOMS.forEach(function (g) { if (g.n === k) cap = g.capital; });
+    }
+    if (!cap) return null;
+    var res = null;
+    PLACES.forEach(function (p) { if (p.n === cap) res = { x: p.x, y: p.y }; });
+    return res;
+  }
+  function compassOf(dx, dy) {
+    var ang = (Math.atan2(-dy, dx) * 180 / Math.PI + 360) % 360;
+    var dirs = ["east", "northeast", "north", "northwest", "west", "southwest", "south", "southeast"];
+    return dirs[Math.round(ang / 45) % 8];
+  }
+  function nameCountMap() {
+    var c = {};
+    mergedPlaces().forEach(function (p) { c[p.n] = (c[p.n] || 0) + 1; });
+    return c;
+  }
+  function dispName(p, counts) {
+    counts = counts || nameCountMap();
+    if (counts[p.n] > 1) {
+      var cap = kingdomCapitalXY(p.k);
+      var q = cap ? compassOf(p.x - cap.x, p.y - cap.y) : (p.k || "");
+      return p.n + " (" + q + ")";
+    }
+    return p.n;
+  }
+
   var groups = {};   // cat id -> layerGroup
   var enabled = {};  // cat id -> checkbox state
   var markers = [];  // { place, marker }
@@ -288,12 +321,13 @@
     resultsList.innerHTML = "";
     if (!q) return;
     q = q.toLowerCase();
+    var counts = nameCountMap();
     var hits = mergedPlaces().filter(function (p) {
       return p.n.toLowerCase().indexOf(q) !== -1;
     }).slice(0, 30);
     hits.forEach(function (p) {
       var li = document.createElement("li");
-      li.innerHTML = "<span>" + esc(p.n) + '</span><span class="cat">' +
+      li.innerHTML = "<span>" + esc(dispName(p, counts)) + '</span><span class="cat">' +
         esc(catLabel(p.cat)) + "</span>";
       li.addEventListener("click", function () { goTo(p); });
       resultsList.appendChild(li);
@@ -353,7 +387,34 @@
     btn.textContent = "Go to " + best.n;
     btn.addEventListener("click", function () { map.closePopup(); goTo(best); });
     div.appendChild(btn);
+    var mrow = document.createElement("div");
+    mrow.className = "popup-measure";
+    var startB = document.createElement("button");
+    startB.className = "pbtn measure-btn";
+    startB.textContent = "Measure ▸ start";
+    startB.addEventListener("click", function () { setDistanceEndpoint("a", best); map.closePopup(); });
+    var endB = document.createElement("button");
+    endB.className = "pbtn measure-btn";
+    endB.textContent = "▸ end";
+    endB.addEventListener("click", function () { setDistanceEndpoint("b", best); map.closePopup(); });
+    mrow.appendChild(startB); mrow.appendChild(endB);
+    div.appendChild(mrow);
     L.popup().setLatLng(latlng).setContent(div).openOn(map);
+  }
+
+  // fill a distance-tracker endpoint from a clicked place and open the panel
+  function setDistanceEndpoint(which, place) {
+    var body = document.getElementById("dist-body");
+    var head = document.querySelector('[data-target="dist-body"]');
+    if (body && body.classList.contains("hidden")) {
+      body.classList.remove("hidden");
+      if (head) head.classList.add("open");
+    }
+    var input = document.getElementById(which === "a" ? "dist-a" : "dist-b");
+    if (input) {
+      input.value = dispName(place);
+      if (typeof updateDistance === "function") updateDistance();
+    }
   }
 
   // ---------- edit mode ----------
@@ -653,10 +714,11 @@
 
   function refreshDatalist() {
     distList.innerHTML = "";
-    mergedPlaces().sort(function (a, b) { return a.n.localeCompare(b.n); })
+    var counts = nameCountMap();
+    mergedPlaces().slice().sort(function (a, b) { return a.n.localeCompare(b.n); })
       .forEach(function (p) {
         var o = document.createElement("option");
-        o.value = p.n;
+        o.value = dispName(p, counts);
         distList.appendChild(o);
       });
   }
@@ -665,7 +727,13 @@
     var t = name.trim().toLowerCase();
     if (!t) return null;
     var all = mergedPlaces();
+    var counts = nameCountMap();
     var i;
+    // exact disambiguated label (e.g. "Anye (southeast)")
+    for (i = 0; i < all.length; i++) {
+      if (dispName(all[i], counts).toLowerCase() === t) return all[i];
+    }
+    // exact plain name — return first match
     for (i = 0; i < all.length; i++) {
       if (all[i].n.toLowerCase() === t) return all[i];
     }
@@ -689,8 +757,8 @@
     var ra = SEA.reachable(pa), rb = SEA.reachable(pb);
     if (!ra.viable || !rb.viable) {
       var who = [];
-      if (!ra.viable) who.push(esc(pa.n));
-      if (!rb.viable) who.push(esc(pb.n));
+      if (!ra.viable) who.push(esc(dispName(pa)));
+      if (!rb.viable) who.push(esc(dispName(pb)));
       return '<br><span class="sea-no">⚓ Not reachable by ship &mdash; ' +
         who.join(" and ") + (who.length > 1 ? " are landlocked." : " is landlocked.") + "</span>";
     }
@@ -712,14 +780,14 @@
     }
     if (a.state === "ok" && b.state === "ok") {
       var pa = a.place, pb = b.place;
-      if (pa.n === pb.n) {
+      if (pa.id === pb.id || (pa.x === pb.x && pa.y === pb.y)) {
         distOut.innerHTML = "Pick two different places.";
         return;
       }
       var mi = Math.round(Math.hypot(pa.x - pb.x, pa.y - pb.y) * MI_PER_PX);
       var foot = Math.max(1, Math.round(mi / 24));
       var horse = Math.max(1, Math.round(mi / 45));
-      var html = "<b>" + esc(pa.n) + "</b> &rarr; <b>" + esc(pb.n) + "</b><br>" +
+      var html = "<b>" + esc(dispName(pa)) + "</b> &rarr; <b>" + esc(dispName(pb)) + "</b><br>" +
         '<span class="dist-big">~' + mi + " miles</span> as the crow flies<br>" +
         "Overland: roughly <b>" + foot + " day" + (foot > 1 ? "s" : "") + "</b> on foot or <b>" +
         horse + " day" + (horse > 1 ? "s" : "") + "</b> mounted.";
