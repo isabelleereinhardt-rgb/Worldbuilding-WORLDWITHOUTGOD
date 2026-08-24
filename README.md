@@ -25,14 +25,20 @@ and it will be live at your Pages URL.
 
 ### Two eras (tabs)
 
-The atlas has two switchable era tabs at the top of the sidebar:
+The atlas has three switchable era tabs at the top of the sidebar:
 
 - **Six Kingdoms Era** (~7,250 BR) — the original six-kingdoms political map.
 - **Empire Era** (~7,160 BR – ~1,852 AR) — the Early Empire through the Golden
   Millennia: the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand
-  Duchies, Hikai and Lingia. Built from the Azgaar SVG export (names taken
-  verbatim from the vector labels; countries assigned by point-in-polygon of
-  the state borders).
+  Duchies, Hikai and Lingia.
+- **Present** (~1,852 AR onward) — the present age: the kingdoms of Lajazer,
+  Civer, Atriki, Tarmet, Berlailia and Ociyaran, plus the sacred-neutral
+  island of the Cidet (the holy city Aseri Oshei and the Temple of the Gods,
+  Oshei Naos), the Academy and Thult in the west.
+
+The Empire and Present maps are each built from their own Azgaar SVG export
+(names taken verbatim from the vector labels; kingdoms assigned by
+point-in-polygon of the state borders).
 
 Both eras share the same geography, so the heightmap, precipitation, ocean
 (ship) routing and mile scale are common to both; each tab has its own

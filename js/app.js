@@ -42,6 +42,17 @@
       layers: [
         { id: "terrain", label: "Terrain (default)", src: "assets/empire.jpg", bounds: atlasBounds }
       ]
+    },
+    present: {
+      id: "present", label: "Present",
+      textDefaults: { title: "Map of the World", subtitle: "The Present Age",
+        about1: "A map of the world in the present age (~1,852 AR onward) — the six kingdoms of Lajazer, Civer, Atriki, Tarmet, Berlailia and Ociyaran, with the sacred island of the Cidet, the Academy and Thult in the west." },
+      places: (typeof PLACES_PRESENT !== "undefined") ? PLACES_PRESENT : [],
+      states: (typeof PRESENT_STATES !== "undefined") ? PRESENT_STATES : [],
+      defaultLayer: "terrain",
+      layers: [
+        { id: "terrain", label: "Terrain (default)", src: "assets/present.jpg", bounds: atlasBounds }
+      ]
     }
   };
   var active = WORLDS.six;
