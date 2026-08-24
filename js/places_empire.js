@@ -24,7 +24,7 @@ const PLACES_EMPIRE = [
   { n: "Baviet", cat: "capital", x: 4130, y: 2087, k: "The Caporiolan Kingdom", d: "Capital of the Caporiolan Kingdom." },
   { n: "Hadirel", cat: "capital", x: 6790, y: 2348, k: "Theolisseia", d: "Capital of Theolisseia." },
   { n: "Haleret", cat: "capital", x: 3160, y: 2468, k: "Lingia", d: "Capital of Lingia." },
-  { n: "Lajazer", cat: "capital", x: 1808, y: 2175, k: "The Tanan Grand Duchy", d: "Capital of the Tanan Grand Duchy." },
+  { n: "Lajazer", cat: "capital", x: 2262, y: 1836, k: "The Tanan Grand Duchy", d: "Capital of the Tanan Grand Duchy." },
   { n: "Ociyaran", cat: "capital", x: 6593, y: 1313, k: "The Uxridian Grand Duchy", d: "Capital of the Uxridian Grand Duchy." },
   { n: "Osenki", cat: "capital", x: 3918, y: 763, k: "Hikai", d: "Capital of Hikai." },
   { n: "Port Absey", cat: "city", x: 3614, y: 2616, k: "The Caporiolan Kingdom", d: "In the Caporiolan Kingdom, about 600 mi southwest of Baviet, near Durk and Acin." },
