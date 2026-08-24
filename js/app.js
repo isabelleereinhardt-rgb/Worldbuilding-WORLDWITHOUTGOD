@@ -165,8 +165,13 @@
   function dispName(p, counts) {
     counts = counts || nameCountMap();
     if (counts[p.n] > 1) {
-      var cap = kingdomCapitalXY(p.k);
-      var q = cap ? compassOf(p.x - cap.x, p.y - cap.y) : (p.k || "");
+      var q;
+      if (p.cat === "capital") {
+        q = "capital";
+      } else {
+        var cap = kingdomCapitalXY(p.k);
+        q = cap ? compassOf(p.x - cap.x, p.y - cap.y) : (p.k || "");
+      }
       return p.n + " (" + q + ")";
     }
     return p.n;
