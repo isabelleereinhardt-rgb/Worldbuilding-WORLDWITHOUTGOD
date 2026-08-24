@@ -5,14 +5,14 @@
 // k: kingdom the place belongs to (omitted for open seas / neutral sites)
 
 const PLACES = [
-  { n: "Gherci", cat: "region", x: 4120, y: 1840, k: "Gherci", d: "Largest and most central kingdom of the pre-Empire era. Capital: Tarmet." },
-  { n: "Coelum", cat: "region", x: 4235, y: 975, k: "Coelum", d: "The northern 'Forsaken Land'. Capital: Atriki, beside Lake Trang." },
-  { n: "Vikitsv", cat: "region", x: 6055, y: 1830, k: "Vikitsv", d: "Mountain kingdom of the eastern peninsula, radiating from Mount Aicren. Capital: Berlailia." },
-  { n: "Equateiy", cat: "region", x: 6515, y: 1185, k: "Equateiy", d: "Highland kingdom of the northeast. Capital: Ociyaran." },
+  { n: "Gherci", cat: "region", x: 4120, y: 1840, k: "Gherci", d: "\"The Land of Eternal Silence.\" The largest and most populous kingdom, a theocratic power where priests outranked kings. Capital: Tarmet. Later became the Caporiolan Kingdom, seat of the empire." },
+  { n: "Coelum", cat: "region", x: 4235, y: 975, k: "Coelum", d: "\"The Forsaken Land.\" The bankrupt northern failed state, largely atheist after wars and plague emptied its villages. Capital: Atriki. Later became Hikai." },
+  { n: "Vikitsv", cat: "region", x: 6055, y: 1830, k: "Vikitsv", d: "\"The Floating Land.\" A mountain magocracy atop Mount Aicren, home of the Magic Tower and its blue-haired people. Capital: Berlailia. Later became Theolisseia." },
+  { n: "Equateiy", cat: "region", x: 6515, y: 1185, k: "Equateiy", d: "\"The Kingdom of Gold.\" The oldest and wealthiest nation, an oligarchy run by the banking houses of House Kivier. Capital: Ociyaran. Later became the Uxridian Grand Duchy." },
   { n: "Ociyaran", cat: "capital", x: 6605, y: 1245, k: "Equateiy", d: "Capital of Equateiy, in the central highlands." },
-  { n: "Aicruae", cat: "region", x: 2170, y: 1920, k: "Aicruae", d: "Westernmost of the six kingdoms of the pre-Empire era. Capital: Lajazer." },
+  { n: "Aicruae", cat: "region", x: 2170, y: 1920, k: "Aicruae", d: "\"The Land under the Sun.\" Westernmost of the six kingdoms — the continent's pious but unstable breadbasket, producing nearly half the world's food. Capital: Lajazer. Later became the Tanan Grand Duchy under the Solisian Empire." },
   { n: "Lajazer", cat: "capital", x: 2262, y: 1775, k: "Aicruae", d: "Capital of Aicruae, at the center of the kingdom." },
-  { n: "Pireaynea", cat: "region", x: 3020, y: 2230, k: "Pireaynea", d: "South-central kingdom directly east of Aicruae, across the Demon's Pit. Capital: Civer." },
+  { n: "Pireaynea", cat: "region", x: 3020, y: 2230, k: "Pireaynea", d: "\"The Demon's Pit.\" South-central kingdom of warlords and banditry, the continent's only monotheistic nation. Capital: Civer. Later became Lingia." },
   { n: "Berlailia", cat: "capital", x: 6793, y: 2293, k: "Vikitsv", d: "Capital of Vikitsv, on the shoulder of Mount Aicren." },
   { n: "Caduto", cat: "region", x: 6590, y: 1565, k: "Vikitsv", d: "Trade crossing on the Vikitsv-Equateiy border." },
   { n: "Atriki", cat: "capital", x: 3909, y: 704, k: "Coelum", d: "Capital of Coelum, beside Lake Trang." },

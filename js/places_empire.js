@@ -11,15 +11,15 @@ const PLACES_EMPIRE = [
   { n: "Caduto", cat: "region", x: 6526, y: 1537, k: "The Uxridian Grand Duchy", d: "A region in the Uxridian Grand Duchy." },
   { n: "Feacen", cat: "region", x: 3216, y: 2425, k: "Lingia", d: "A region in Lingia." },
   { n: "Halkere", cat: "region", x: 2434, y: 1988, k: "The Tanan Grand Duchy", d: "A region in the Tanan Grand Duchy." },
-  { n: "Hikai", cat: "region", x: 4083, y: 1010, k: "Hikai", d: "One of the great powers of the Early Empire era. Capital: Osenki." },
-  { n: "Lingia", cat: "region", x: 3190, y: 2248, k: "Lingia", d: "One of the great powers of the Early Empire era. Capital: Haleret." },
+  { n: "Hikai", cat: "region", x: 4083, y: 1010, k: "Hikai", d: "Formerly the kingdom of Coelum, the bankrupt 'Forsaken Land'. Capital: Osenki." },
+  { n: "Lingia", cat: "region", x: 3190, y: 2248, k: "Lingia", d: "Formerly the kingdom of Pireaynea, its warlord anarchy subdued by imperial troops. Capital: Haleret." },
   { n: "Lower Cosar", cat: "region", x: 3814, y: 2403, k: "Lingia", d: "A region in Lingia." },
   { n: "The Aoner", cat: "region", x: 2028, y: 1831, k: "The Tanan Grand Duchy", d: "A region in the Tanan Grand Duchy." },
-  { n: "The Caporiolan Kingdom", cat: "region", x: 4209, y: 1869, k: "The Caporiolan Kingdom", d: "One of the great powers of the Early Empire era. Capital: Baviet." },
+  { n: "The Caporiolan Kingdom", cat: "region", x: 4209, y: 1869, k: "The Caporiolan Kingdom", d: "Formerly the kingdom of Gherci; the theocratic heartland and seat of the Solisian Empire. Capital: Baviet." },
   { n: "The Senagai", cat: "region", x: 1615, y: 2236, k: "The Tanan Grand Duchy", d: "A region in the Tanan Grand Duchy." },
-  { n: "The Tanan Grand Duchy", cat: "region", x: 2375, y: 1946, k: "The Tanan Grand Duchy", d: "One of the great powers of the Early Empire era. Capital: Lajazer." },
-  { n: "The Uxridian Grand Duchy", cat: "region", x: 6636, y: 1220, k: "The Uxridian Grand Duchy", d: "One of the great powers of the Early Empire era. Capital: Ociyaran." },
-  { n: "Theolisseia", cat: "region", x: 6379, y: 1793, k: "Theolisseia", d: "One of the great powers of the Early Empire era. Capital: Hadirel." },
+  { n: "The Tanan Grand Duchy", cat: "region", x: 2375, y: 1946, k: "The Tanan Grand Duchy", d: "Formerly the kingdom of Aicruae, the western breadbasket. One of the great powers of the Early Empire. Capital: Lajazer." },
+  { n: "The Uxridian Grand Duchy", cat: "region", x: 6636, y: 1220, k: "The Uxridian Grand Duchy", d: "Formerly the kingdom of Equateiy, the wealthy banking oligarchy that joined the empire by treaty. Capital: Ociyaran." },
+  { n: "Theolisseia", cat: "region", x: 6379, y: 1793, k: "Theolisseia", d: "Formerly the kingdom of Vikitsv, the mountain magocracy of Mount Aicren. Capital: Hadirel." },
   { n: "Urdey", cat: "region", x: 3396, y: 2104, k: "Lingia", d: "A region in Lingia." },
   { n: "Baviet", cat: "capital", x: 4130, y: 2087, k: "The Caporiolan Kingdom", d: "Capital of the Caporiolan Kingdom." },
   { n: "Hadirel", cat: "capital", x: 6790, y: 2348, k: "Theolisseia", d: "Capital of Theolisseia." },
@@ -459,7 +459,7 @@ const PLACES_EMPIRE = [
   { n: "The Quather Sea", cat: "water", x: 2086, y: 562, d: "A sea or lake of the known world." },
   { n: "The Academy", cat: "island", x: 1794, y: 1423, d: "An island of the known world." },
   { n: "The Cidet", cat: "island", x: 1390, y: 2154, d: "An island of the known world." },
-  { n: "Thult", cat: "island", x: 1327, y: 2718, d: "An island of the known world." },
+  { n: "Thult", cat: "island", x: 1327, y: 2718, d: "Southwestern island, formerly the Mystic Isles; claimed and renamed by the empire." },
   { n: "Abrenna Forest", cat: "forest", x: 3798, y: 1462, k: "The Caporiolan Kingdom", d: "In the Caporiolan Kingdom, about 575 mi northwest of Baviet, near Selve and Oscana." },
   { n: "Aro Forest", cat: "forest", x: 6705, y: 1103, k: "The Uxridian Grand Duchy", d: "In the Uxridian Grand Duchy, about 200 mi northeast of Ociyaran, near Gabbia and Arona." },
   { n: "Nedi Forest", cat: "forest", x: 6075, y: 1706, k: "The Uxridian Grand Duchy", d: "In the Uxridian Grand Duchy, about 525 mi southwest of Ociyaran, near Talu and Ravia." },
@@ -479,10 +479,10 @@ const PLACES_EMPIRE = [
 ];
 
 const EMPIRE_STATES = [
-  { n: "Lingia", capital: "Haleret", d: "One of the great powers of the Early Empire through the Golden Millennia.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
-  { n: "Hikai", capital: "Osenki", d: "One of the great powers of the Early Empire through the Golden Millennia.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
-  { n: "The Uxridian Grand Duchy", capital: "Ociyaran", d: "One of the great powers of the Early Empire through the Golden Millennia.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
-  { n: "Theolisseia", capital: "Hadirel", d: "One of the great powers of the Early Empire through the Golden Millennia.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
-  { n: "The Caporiolan Kingdom", capital: "Baviet", d: "One of the great powers of the Early Empire through the Golden Millennia.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
-  { n: "The Tanan Grand Duchy", capital: "Lajazer", d: "One of the great powers of the Early Empire through the Golden Millennia.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] }
+  { n: "Lingia", capital: "Haleret", d: "Formerly the kingdom of Pireaynea, its warlord anarchy subdued by imperial troops. Capital: Haleret.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
+  { n: "Hikai", capital: "Osenki", d: "Formerly the kingdom of Coelum, the bankrupt 'Forsaken Land'. Capital: Osenki.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
+  { n: "The Uxridian Grand Duchy", capital: "Ociyaran", d: "Formerly the kingdom of Equateiy, the wealthy banking oligarchy that joined the empire by treaty. Capital: Ociyaran.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
+  { n: "Theolisseia", capital: "Hadirel", d: "Formerly the kingdom of Vikitsv, the mountain magocracy of Mount Aicren. Capital: Hadirel.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
+  { n: "The Caporiolan Kingdom", capital: "Baviet", d: "Formerly the kingdom of Gherci; the theocratic heartland and seat of the Solisian Empire. Capital: Baviet.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] },
+  { n: "The Tanan Grand Duchy", capital: "Lajazer", d: "Formerly the kingdom of Aicruae, the western breadbasket. One of the great powers of the Early Empire. Capital: Lajazer.", biomes: ["Grassland","Temperate deciduous forest","Taiga","Wetland"] }
 ];
