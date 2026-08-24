@@ -22,6 +22,23 @@ python3 -m http.server 8000
 Or enable GitHub Pages for this repository (deploy from branch, root folder)
 and it will be live at your Pages URL.
 
+
+### Two eras (tabs)
+
+The atlas has two switchable era tabs at the top of the sidebar:
+
+- **Six Kingdoms Era** (~7,250 BR) — the original six-kingdoms political map.
+- **Empire Era** (~7,160 BR – ~1,852 AR) — the Early Empire through the Golden
+  Millennia: the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand
+  Duchies, Hikai and Lingia. Built from the Azgaar SVG export (names taken
+  verbatim from the vector labels; countries assigned by point-in-polygon of
+  the state borders).
+
+Both eras share the same geography, so the heightmap, precipitation, ocean
+(ship) routing and mile scale are common to both; each tab has its own
+labeled base map, searchable markers with descriptions, distance tracker,
+export, and read-aloud. Edits are saved per era.
+
 ### Features
 
 - **Pan & zoom** across the full 7680×3962 px atlas.

@@ -77,6 +77,31 @@ header h1 {
 }
 .subtitle { font-style: italic; color: #b6ad92; margin: 2px 0 4px; font-size: 13px; }
 
+#era-tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.era-tab {
+  flex: 1;
+  padding: 8px 6px;
+  font-family: Georgia, serif;
+  font-size: 12.5px;
+  letter-spacing: 0.5px;
+  color: #b6ad92;
+  background: #1b1810;
+  border: 1px solid #4a4028;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.era-tab:hover { background: #2a2416; }
+.era-tab.active {
+  color: #14110a;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: bold;
+}
+
 .panel {
   margin-top: 18px;
   padding-top: 12px;

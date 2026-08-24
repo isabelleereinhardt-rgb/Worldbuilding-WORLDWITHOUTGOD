@@ -2,15 +2,60 @@
 (function () {
   "use strict";
 
-  // Atlas image space (canonical coordinate system for all layers & markers)
+  // Atlas image space (canonical coordinate system for all layers & markers).
+  // Both era maps are Azgaar exports of the same world at the same scale, so
+  // they share this coordinate space, the ocean grid, and the mile scale.
   var W = 7680, H = 3962;
-  var MI_PER_PX = 0.7975; // from the map's 600-mile scale bar
+  var MI_PER_PX = 0.7975; // from the map's 800-mile scale bar
 
-  // ---------- local edits (persisted in this browser) ----------
-  var LS_EDITS = "bela.edits.v1";    // { placeId: {n,cat,x,y,d,deleted} }
-  var LS_CUSTOM = "bela.custom.v1";  // [ {id,n,cat,x,y,d} ]
-  var LS_TEXT = "bela.text.v1";      // { key: text }
+  function ll(x, y) { return [H - y, x]; }
+  function xyOf(latlng) { return { x: latlng.lng, y: H - latlng.lat }; }
+  var atlasBounds = [ll(0, H), ll(W, 0)];
+  // Precipitation export is the same viewport at a different zoom; these bounds
+  // register it onto the atlas space (from landmass cross-correlation).
+  var popBounds = [ll(63.7, 3956.7), ll(7675.2, 0)];
 
+  // ---------- worlds (era tabs) ----------
+  var WORLDS = {
+    six: {
+      id: "six", label: "Six Kingdoms Era",
+      textDefaults: { title: "Map of the World", subtitle: "The Six Kingdoms \u2014 7,250 BR",
+        about1: "A map of the six kingdoms of the world, as they stood in 7,250 BR." },
+      places: (typeof PLACES !== "undefined") ? PLACES : [],
+      states: (typeof KINGDOMS !== "undefined") ? KINGDOMS : [],
+      defaultLayer: "terrain",
+      layers: [
+        { id: "terrain", label: "Terrain (default)", src: "assets/terrain.jpg", bounds: atlasBounds },
+        { id: "atlas", label: "Atlas", src: "assets/atlas.jpg", bounds: atlasBounds },
+        { id: "height", label: "Heightmap", src: "assets/height.jpg", bounds: atlasBounds },
+        { id: "precipitation", label: "Precipitation", src: "assets/precipitation.jpg", bounds: popBounds },
+        { id: "borders", label: "Kingdom borders", src: "assets/borders.jpg", bounds: atlasBounds }
+      ]
+    },
+    empire: {
+      id: "empire", label: "Empire Era",
+      textDefaults: { title: "Map of the World", subtitle: "The Early Empire \u2192 the Golden Millennia",
+        about1: "A map of the world from the Early Empire through the Golden Millennia \u2014 the age of the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand Duchies, Hikai and Lingia (~7160 BR \u2013 ~1852 AR)." },
+      places: (typeof PLACES_EMPIRE !== "undefined") ? PLACES_EMPIRE : [],
+      states: (typeof EMPIRE_STATES !== "undefined") ? EMPIRE_STATES : [],
+      defaultLayer: "political",
+      layers: [
+        { id: "political", label: "Political (default)", src: "assets/empire.jpg", bounds: atlasBounds },
+        { id: "height", label: "Heightmap", src: "assets/height.jpg", bounds: atlasBounds },
+        { id: "precipitation", label: "Precipitation", src: "assets/precipitation.jpg", bounds: popBounds }
+      ]
+    }
+  };
+  var active = WORLDS.six;
+  function ensureLayerObjs(world) {
+    if (world._objs) return;
+    world._objs = {};
+    world.layers.forEach(function (l) { world._objs[l.id] = L.imageOverlay(l.src, l.bounds); });
+  }
+  ensureLayerObjs(active);
+
+  // ---------- per-world local edits (persisted in this browser) ----------
+  function lsKey(kind) { return "bela." + kind + ".v1." + active.id; }
   function lsLoad(key, fallback) {
     try {
       var v = JSON.parse(localStorage.getItem(key));
@@ -20,16 +65,19 @@
   function lsSave(key, val) {
     try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
   }
-
-  var edits = lsLoad(LS_EDITS, {});
-  var custom = lsLoad(LS_CUSTOM, []);
-  var texts = lsLoad(LS_TEXT, {});
+  var edits, custom, texts;
+  function loadEdits() {
+    edits = lsLoad(lsKey("edits"), {});
+    custom = lsLoad(lsKey("custom"), []);
+    texts = lsLoad(lsKey("text"), {});
+  }
+  loadEdits();
   var editMode = false;
 
   // Merge base data + local edits into the working gazetteer
   function mergedPlaces() {
     var out = [];
-    PLACES.forEach(function (p, i) {
+    active.places.forEach(function (p, i) {
       var id = "p" + i;
       var e = edits[id];
       if (e && e.deleted) return;
@@ -57,34 +105,17 @@
     maxBoundsViscosity: 0.8
   });
 
-  function ll(x, y) { return [H - y, x]; }
-  function xyOf(latlng) { return { x: latlng.lng, y: H - latlng.lat }; }
-
-  var atlasBounds = [ll(0, H), ll(W, 0)];
-  // Precipitation export shows the same viewport rendered full-bleed at a
-  // different zoom; bounds below register it onto the atlas space
-  // (alignment computed by cross-correlating landmass silhouettes).
-  var popBounds = [ll(63.7, 3956.7), ll(7675.2, 0)];
-
-  var layers = {
-    terrain: L.imageOverlay("assets/terrain.jpg", atlasBounds),
-    atlas: L.imageOverlay("assets/atlas.jpg", atlasBounds),
-    height: L.imageOverlay("assets/height.jpg", atlasBounds),
-    precipitation: L.imageOverlay("assets/precipitation.jpg", popBounds),
-    borders: L.imageOverlay("assets/borders.jpg", atlasBounds)
-  };
-
-  var currentBase = "terrain";
-  layers.terrain.addTo(map);
+  var layers = active._objs;               // reassigned on world switch
+  var currentBase = active.defaultLayer;
+  layers[currentBase].addTo(map);
   map.setMaxBounds([ll(-900, H + 700), ll(W + 900, -700)]);
   map.fitBounds(atlasBounds);
 
-  // Prefetch the other layers so switching never shows a blank map
-  window.addEventListener("load", function () {
-    ["assets/atlas.jpg", "assets/height.jpg", "assets/precipitation.jpg", "assets/borders.jpg"].forEach(function (src) {
-      var im = new Image(); im.src = src;
-    });
-  });
+  // Prefetch this world's other layers so switching never shows a blank map
+  function prefetchLayers() {
+    active.layers.forEach(function (l) { var im = new Image(); im.src = l.src; });
+  }
+  window.addEventListener("load", prefetchLayers);
 
   // ---------- categories ----------
   var CATS = [
@@ -115,12 +146,10 @@
   // unique display label so the search list and distance pickers aren't ambiguous.
   function kingdomCapitalXY(k) {
     var cap = null;
-    if (typeof KINGDOMS !== "undefined") {
-      KINGDOMS.forEach(function (g) { if (g.n === k) cap = g.capital; });
-    }
+    active.states.forEach(function (g) { if (g.n === k) cap = g.capital; });
     if (!cap) return null;
     var res = null;
-    PLACES.forEach(function (p) { if (p.n === cap) res = { x: p.x, y: p.y }; });
+    active.places.forEach(function (p) { if (p.n === cap) res = { x: p.x, y: p.y }; });
     return res;
   }
   function compassOf(dx, dy) {
@@ -279,23 +308,42 @@
     });
   }
 
-  // ---------- base layer switching ----------
-  document.querySelectorAll('input[name="base"]').forEach(function (r) {
-    r.addEventListener("change", function () {
-      if (!this.checked) return;
-      map.removeLayer(layers[currentBase]);
-      currentBase = this.value;
-      layers[currentBase].addTo(map);
-      layers[currentBase].bringToBack();
-      applyCompare();
-    });
-  });
-
-  // ---------- compare overlay ----------
+  // ---------- base layer switching (dynamic per world) ----------
+  var baseBox = document.getElementById("base-layers");
   var cmpOn = document.getElementById("cmp-on");
   var cmpSel = document.getElementById("cmp-layer");
   var cmpOpacity = document.getElementById("cmp-opacity");
   var cmpActive = null;
+
+  function buildLayerControls() {
+    baseBox.innerHTML = "";
+    active.layers.forEach(function (l) {
+      var lab = document.createElement("label");
+      lab.className = "row";
+      lab.innerHTML = '<input type="radio" name="base" value="' + l.id + '"' +
+        (l.id === currentBase ? " checked" : "") + "> " + l.label;
+      baseBox.appendChild(lab);
+    });
+    cmpSel.innerHTML = "";
+    active.layers.forEach(function (l) {
+      if (l.id === currentBase) return;
+      var o = document.createElement("option");
+      o.value = l.id; o.textContent = l.label;
+      cmpSel.appendChild(o);
+    });
+  }
+  baseBox.addEventListener("change", function (e) {
+    if (e.target.name !== "base" || !e.target.checked) return;
+    map.removeLayer(layers[currentBase]);
+    currentBase = e.target.value;
+    layers[currentBase].addTo(map);
+    layers[currentBase].bringToBack();
+    // refresh compare options so the current base isn't offered against itself
+    var prev = cmpSel.value;
+    buildLayerControls();
+    if (prev && prev !== currentBase) cmpSel.value = prev;
+    applyCompare();
+  });
 
   function applyCompare() {
     if (cmpActive && map.hasLayer(cmpActive)) map.removeLayer(cmpActive);
@@ -437,11 +485,11 @@
       custom.forEach(function (p) {
         if (p.id === id) Object.keys(patch).forEach(function (k) { p[k] = patch[k]; });
       });
-      lsSave(LS_CUSTOM, custom);
+      lsSave(lsKey("custom"), custom);
     } else {
       edits[id] = edits[id] || {};
       Object.keys(patch).forEach(function (k) { edits[id][k] = patch[k]; });
-      lsSave(LS_EDITS, edits);
+      lsSave(lsKey("edits"), edits);
     }
     buildMarkers();
   }
@@ -449,11 +497,11 @@
   function deletePlace(id) {
     if (id.charAt(0) === "c") {
       custom = custom.filter(function (p) { return p.id !== id; });
-      lsSave(LS_CUSTOM, custom);
+      lsSave(lsKey("custom"), custom);
     } else {
       edits[id] = edits[id] || {};
       edits[id].deleted = true;
-      lsSave(LS_EDITS, edits);
+      lsSave(lsKey("edits"), edits);
     }
     map.closePopup();
     buildMarkers();
@@ -513,7 +561,7 @@
     var xy = xyOf(latlng);
     var form = editorForm({ n: "", cat: "town", d: "" }, function (vals) {
       var nearestK = null, bd = Infinity;
-      PLACES.forEach(function (q) {
+      active.places.forEach(function (q) {
         if (!q.k) return;
         var dd = (q.x - xy.x) * (q.x - xy.x) + (q.y - xy.y) * (q.y - xy.y);
         if (dd < bd) { bd = dd; nearestK = q.k; }
@@ -524,7 +572,7 @@
         x: Math.round(xy.x), y: Math.round(xy.y),
         d: vals.d, k: nearestK
       });
-      lsSave(LS_CUSTOM, custom);
+      lsSave(lsKey("custom"), custom);
       map.closePopup();
       buildMarkers();
     });
@@ -537,14 +585,22 @@
 
   // ---------- editable site text ----------
   var editableEls = document.querySelectorAll("[data-edit]");
+  function applyTexts() {
+    editableEls.forEach(function (el) {
+      var key = el.getAttribute("data-edit");
+      var v = (texts && texts[key] !== undefined) ? texts[key]
+        : (active.textDefaults ? active.textDefaults[key] : undefined);
+      if (v !== undefined) el.textContent = v;
+    });
+  }
   editableEls.forEach(function (el) {
     var key = el.getAttribute("data-edit");
-    if (texts[key]) el.textContent = texts[key];
     el.addEventListener("input", function () {
       texts[key] = el.textContent;
-      lsSave(LS_TEXT, texts);
+      lsSave(lsKey("text"), texts);
     });
   });
+  applyTexts();
   function setTextEditable(on) {
     editableEls.forEach(function (el) {
       el.setAttribute("contenteditable", on ? "true" : "false");
@@ -568,21 +624,21 @@
       "// Coordinates are pixels in the atlas image space (7680 x 3962), origin top-left.\n" +
       "// Exported from the atlas editor on " + new Date().toISOString().slice(0, 10) + ".\n" +
       "// cat: region | city | town | water | river | island | forest | territory | landmark\n\n" +
-      "const PLACES = [\n" + lines.join(",\n") + "\n];\n\n" +
+      (active.id === "empire" ? "const PLACES_EMPIRE = [\n" : "const PLACES = [\n") + lines.join(",\n") + "\n];\n\n" +
       "const BIOMES = [\n" + biomes.join(",\n") + "\n];\n";
     var blob = new Blob([out], { type: "text/javascript" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "places.js";
+    a.download = active.id === "empire" ? "places_empire.js" : "places.js";
     a.click();
     URL.revokeObjectURL(a.href);
   });
 
   document.getElementById("reset-btn").addEventListener("click", function () {
     if (!confirm("Discard ALL local edits (places and text) and restore the original data?")) return;
-    localStorage.removeItem(LS_EDITS);
-    localStorage.removeItem(LS_CUSTOM);
-    localStorage.removeItem(LS_TEXT);
+    localStorage.removeItem(lsKey("edits"));
+    localStorage.removeItem(lsKey("custom"));
+    localStorage.removeItem(lsKey("text"));
     location.reload();
   });
 
@@ -817,22 +873,27 @@
 
 
   // ---------- image export of the current view ----------
-  var LAYER_INFO = {
-    terrain: { src: "assets/terrain.jpg", x0: 0, y0: 0, x1: W, y1: H },
-    atlas: { src: "assets/atlas.jpg", x0: 0, y0: 0, x1: W, y1: H },
-    height: { src: "assets/height.jpg", x0: 0, y0: 0, x1: W, y1: H },
-    precipitation: { src: "assets/precipitation.jpg", x0: 63.7, y0: 0, x1: 7675.2, y1: 3956.7 },
-    borders: { src: "assets/borders.jpg", x0: 0, y0: 0, x1: W, y1: H }
-  };
+  function layerInfo(key) {
+    var l = null;
+    active.layers.forEach(function (x) { if (x.id === key) l = x; });
+    if (!l) return null;
+    var lats = [l.bounds[0][0], l.bounds[1][0]], lngs = [l.bounds[0][1], l.bounds[1][1]];
+    return {
+      src: l.src,
+      x0: Math.min(lngs[0], lngs[1]), x1: Math.max(lngs[0], lngs[1]),
+      y0: H - Math.max(lats[0], lats[1]), y1: H - Math.min(lats[0], lats[1])
+    };
+  }
   var imgCache = {};
   function loadLayerImage(key) {
     return new Promise(function (resolve, reject) {
-      if (imgCache[key] && imgCache[key].complete) return resolve(imgCache[key]);
+      var src = layerInfo(key).src;
+      if (imgCache[src] && imgCache[src].complete) return resolve(imgCache[src]);
       var im = new Image();
       im.onload = function () { resolve(im); };
       im.onerror = reject;
-      im.src = LAYER_INFO[key].src;
-      imgCache[key] = im;
+      im.src = src;
+      imgCache[src] = im;
     });
   }
 
@@ -861,7 +922,7 @@
 
     function drawLayer(key, alpha) {
       return loadLayerImage(key).then(function (im) {
-        var inf = LAYER_INFO[key];
+        var inf = layerInfo(key);
         var sx = (vx0 - inf.x0) / (inf.x1 - inf.x0) * im.naturalWidth;
         var sy = (vy0 - inf.y0) / (inf.y1 - inf.y0) * im.naturalHeight;
         var sw = (vx1 - vx0) / (inf.x1 - inf.x0) * im.naturalWidth;
@@ -951,7 +1012,7 @@
     ];
 
     var groups = [];
-    KINGDOMS.forEach(function (kg) {
+    active.states.forEach(function (kg) {
       var g = { title: "The Kingdom of " + kg.n, meta: kg, sections: [] };
       SECTIONS.forEach(function (sec) {
         if (!catOk[sec[0]]) return;
@@ -1070,6 +1131,42 @@
     }
   });
 
+  // ---------- world (era tab) switching ----------
+  function switchWorld(id) {
+    if (!WORLDS[id] || id === active.id) return;
+    if (speechOK) window.speechSynthesis.cancel();
+    map.closePopup();
+    if (cmpActive && map.hasLayer(cmpActive)) map.removeLayer(cmpActive);
+    cmpActive = null; cmpOn.checked = false;
+    map.removeLayer(layers[currentBase]);
+    // turn off edit mode when leaving a world
+    if (editMode) { editMode = false; editToggle.checked = false; document.body.classList.remove("editing"); setTextEditable(false); }
+
+    active = WORLDS[id];
+    ensureLayerObjs(active);
+    layers = active._objs;
+    currentBase = active.defaultLayer;
+    loadEdits();
+
+    layers[currentBase].addTo(map);
+    layers[currentBase].bringToBack();
+    buildLayerControls();
+    applyTexts();
+    buildMarkers();
+    renderResults("");
+    distA.value = ""; distB.value = ""; distOut.innerHTML = "";
+    prefetchLayers();
+
+    document.querySelectorAll(".era-tab").forEach(function (t) {
+      t.classList.toggle("active", t.getAttribute("data-world") === id);
+    });
+    map.fitBounds(atlasBounds);
+  }
+  document.querySelectorAll(".era-tab").forEach(function (t) {
+    t.addEventListener("click", function () { switchWorld(t.getAttribute("data-world")); });
+  });
+
   // ---------- boot ----------
+  buildLayerControls();
   buildMarkers();
 })();
