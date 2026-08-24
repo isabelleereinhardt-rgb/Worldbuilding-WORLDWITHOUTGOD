@@ -38,11 +38,13 @@
         about1: "A map of the world from the Early Empire through the Golden Millennia \u2014 the age of the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand Duchies, Hikai and Lingia (~7160 BR \u2013 ~1852 AR)." },
       places: (typeof PLACES_EMPIRE !== "undefined") ? PLACES_EMPIRE : [],
       states: (typeof EMPIRE_STATES !== "undefined") ? EMPIRE_STATES : [],
-      defaultLayer: "political",
+      defaultLayer: "terrain",
       layers: [
-        { id: "political", label: "Political (default)", src: "assets/empire.jpg", bounds: atlasBounds },
+        { id: "terrain", label: "Terrain (default)", src: "assets/empire.jpg", bounds: atlasBounds },
+        { id: "atlas", label: "Atlas", src: "assets/empire_atlas.jpg", bounds: atlasBounds },
         { id: "height", label: "Heightmap", src: "assets/height.jpg", bounds: atlasBounds },
-        { id: "precipitation", label: "Precipitation", src: "assets/precipitation.jpg", bounds: popBounds }
+        { id: "precipitation", label: "Precipitation", src: "assets/precipitation.jpg", bounds: popBounds },
+        { id: "borders", label: "Kingdom borders", src: "assets/empire_borders.jpg", bounds: atlasBounds }
       ]
     }
   };
