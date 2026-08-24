@@ -10,7 +10,7 @@
 const PLACES_PRESENT = [
   { n: "The Eriata District", cat: "region", x: 4416, y: 697, k: "The Kingdom of Atriki", d: "A district of The Kingdom of Atriki." },
   { n: "The Kingdom of Atriki", cat: "region", x: 4237, y: 950, k: "The Kingdom of Atriki", d: "Once Coelum, the 'Forsaken Land,' later Hikai. Capital: Elgan." },
-  { n: "The Kingdom of Berlailia", cat: "region", x: 6043, y: 1677, k: "The Kingdom of Berlailia", d: "Once Vikitsv, the mountain magocracy of Mount Aicren, later Theolisseia. Capital: Hadirel." },
+  { n: "The Kingdom of Berlailia", cat: "region", x: 5955, y: 1917, k: "The Kingdom of Berlailia", d: "Once Vikitsv, the mountain magocracy of Mount Aicren, later Theolisseia. Capital: Hadirel." },
   { n: "The Kingdom of Civer", cat: "region", x: 3025, y: 2197, k: "The Kingdom of Civer", d: "Once Pireaynea, the 'Demon's Pit,' later Lingia. Capital: Lorne." },
   { n: "The Kingdom of Lajazer", cat: "region", x: 2205, y: 1920, k: "The Kingdom of Lajazer", d: "The western kingdom; once the sun-kingdom of Aicruae, later the Tanan Grand Duchy. Capital: Vellin." },
   { n: "The Kingdom of Ociyaran", cat: "region", x: 6494, y: 1174, k: "The Kingdom of Ociyaran", d: "Once Equateiy, the banking 'Kingdom of Gold,' later the Uxridian Grand Duchy. Capital: Zada." },
@@ -505,7 +505,7 @@ const PLACES_PRESENT = [
   { n: "Aseri Oshei", cat: "territory", x: 1377, y: 2295, k: "The Cidet", d: "The holy city of the Cidet; the pilgrim settlement that grew up around the Temple of the Gods." },
   { n: "The Cidet", cat: "territory", x: 1395, y: 2128, k: "The Cidet", d: "The holy island: a sacred-neutral territory governed by the Danepelie; a holy city and temple ringed by sacred wilds." },
   { n: "Thult", cat: "territory", x: 1313, y: 2705, k: "Thult", d: "A sacred, neutral island of the far southwest; once the Mystic Isles, renamed Thult." },
-  { n: "Academy Building", cat: "landmark", x: 1201, y: 685, k: "The Academy", d: "On the grounds of the Academy." },
+  { n: "Academy Building", cat: "landmark", x: 1958, y: 1374, k: "The Academy", d: "On the grounds of the Academy." },
   { n: "Cafe Iri", cat: "landmark", x: 1742, y: 1502, k: "The Academy", d: "On the grounds of the Academy." },
   { n: "Dor Tari Naos", cat: "landmark", x: 5319, y: 1887, k: "The Kingdom of Tarmet", d: "A temple (naos) in The Kingdom of Tarmet." },
   { n: "Female Dorms", cat: "landmark", x: 2023, y: 1338, k: "The Academy", d: "On the grounds of the Academy." },
