@@ -1,4 +1,4 @@
-// World gazetteer — the six kingdoms, 7,250 BR.
+// World gazetteer: the six kingdoms, 7,250 BR.
 // Coordinates are pixels in the atlas image space (7680 x 3962), origin top-left.
 // Names & lore cross-checked against "Map of the world during the 7,250 BR" (canon doc).
 // cat: region | capital | city | town | water | river | island | forest | territory | landmark
@@ -10,7 +10,7 @@ const PLACES = [
   { n: "Vikitsv", cat: "region", x: 6055, y: 1830, k: "Vikitsv", d: "\"The Floating Land.\" A mountain magocracy atop Mount Aicren, home of the Magic Tower and its blue-haired people. Capital: Berlailia. Later became Theolisseia." },
   { n: "Equateiy", cat: "region", x: 6515, y: 1185, k: "Equateiy", d: "\"The Kingdom of Gold.\" The oldest and wealthiest nation, an oligarchy run by the banking houses of House Kivier. Capital: Ociyaran. Later became the Uxridian Grand Duchy." },
   { n: "Ociyaran", cat: "capital", x: 6605, y: 1245, k: "Equateiy", d: "Capital of Equateiy, in the central highlands." },
-  { n: "Aicruae", cat: "region", x: 2170, y: 1920, k: "Aicruae", d: "\"The Land under the Sun.\" Westernmost of the six kingdoms — the continent's pious but unstable breadbasket, producing nearly half the world's food. Capital: Lajazer. Later became the Tanan Grand Duchy under the Solisian Empire." },
+  { n: "Aicruae", cat: "region", x: 2170, y: 1920, k: "Aicruae", d: "\"The Land under the Sun.\" Westernmost of the six kingdoms; the continent's pious but unstable breadbasket, producing nearly half the world's food. Capital: Lajazer. Later became the Tanan Grand Duchy under the Solisian Empire." },
   { n: "Lajazer", cat: "capital", x: 2262, y: 1775, k: "Aicruae", d: "Capital of Aicruae, at the center of the kingdom." },
   { n: "Pireaynea", cat: "region", x: 3020, y: 2230, k: "Pireaynea", d: "\"The Demon's Pit.\" South-central kingdom of warlords and banditry, the continent's only monotheistic nation. Capital: Civer. Later became Lingia." },
   { n: "Berlailia", cat: "capital", x: 6793, y: 2293, k: "Vikitsv", d: "Capital of Vikitsv, on the shoulder of Mount Aicren." },
@@ -70,7 +70,7 @@ const PLACES = [
   { n: "Lake Trang", cat: "water", x: 4110, y: 805, k: "Coelum", d: "In the Kingdom of Coelum, about 175 mi southeast of Atriki, near Maharg and Erygal. The great lake at Coelum's heart, beside the capital Atriki." },
   { n: "Honlo Lake", cat: "water", x: 4345, y: 1455, k: "Gherci", d: "In the Kingdom of Gherci, about 500 mi north of Tarmet, near Inqua and Hoan. The great lake of north-central Gherci, below the Coelum border." },
   { n: "The Quather Islands", cat: "island", x: 1851, y: 1437, d: "Island cluster off Aicruae's northwest; canon also calls these the Northern Isles." },
-  { n: "The Cidet", cat: "island", x: 1432, y: 2150, d: "The temple of the gods — a sacred isle west of Aicruae, never colonized." },
+  { n: "The Cidet", cat: "island", x: 1432, y: 2150, d: "The temple of the gods: a sacred isle west of Aicruae, never colonized." },
   { n: "The Mystic Isles", cat: "island", x: 1300, y: 2730, d: "Far southwestern archipelago." },
   { n: "Gogla", cat: "town", x: 7020, y: 2125, k: "Vikitsv", d: "In the Kingdom of Vikitsv, about 225 mi northeast of Berlailia, near Negiet and Gaedu. Settlement of Vikitsv's eastern wall." },
   { n: "Tigrrei Forest", cat: "forest", x: 3320, y: 1670, k: "Gherci", d: "In the Kingdom of Gherci, about 725 mi northwest of Tarmet, near Olune and Shaer. Western border forest shared by Aicruae, Pireaynea and Gherci." },
@@ -237,7 +237,7 @@ const PLACES = [
   { n: "Honete", cat: "town", x: 2142, y: 2208, k: "Aicruae", d: "In the Kingdom of Aicruae, about 350 mi south of Lajazer, near Nayen and Mepria." },
   { n: "The Santie", cat: "town", x: 2251, y: 2234, k: "Aicruae", d: "In the Kingdom of Aicruae, about 350 mi south of Lajazer, near Teisho and Honete." },
   { n: "Liazen", cat: "region", x: 2005, y: 2085, k: "Aicruae", d: "Southern province of Aicruae, toward the badlands." },
-  { n: "The Aoner", cat: "region", x: 2010, y: 1845, k: "Aicruae", d: "The 'Granary of the West' — Aicruae's western granary coast." },
+  { n: "The Aoner", cat: "region", x: 2010, y: 1845, k: "Aicruae", d: "The 'Granary of the West': Aicruae's western granary coast." },
   { n: "Mepria", cat: "town", x: 2137, y: 2299, k: "Aicruae", d: "In the Kingdom of Aicruae, about 425 mi south of Lajazer, near Honete and Teisho." },
   { n: "Teisho", cat: "town", x: 2242, y: 2298, k: "Aicruae", d: "In the Kingdom of Aicruae, about 400 mi south of Lajazer, near The Santie and Laona." },
   { n: "Audin", cat: "town", x: 1989, y: 2344, k: "Aicruae", d: "In the Kingdom of Aicruae, about 500 mi southwest of Lajazer, near Mepria and Bareta." },

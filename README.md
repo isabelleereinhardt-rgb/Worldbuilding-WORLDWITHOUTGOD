@@ -2,7 +2,7 @@
 
 A world building site that helps me think and process world building for my World Without God universe.
 
-## Map of the World — Interactive Atlas
+## Map of the World: Interactive Atlas
 
 An interactive, explorable map of the six kingdoms as they stood in 7,250 BR,
 rebuilt from the Azgaar Fantasy Map Generator exports as a self-contained
@@ -12,7 +12,7 @@ static website.
 
 ### Run it
 
-No build step — it's plain HTML/JS/CSS. Serve the folder and open it:
+No build step; it's plain HTML/JS/CSS. Serve the folder and open it:
 
 ```bash
 python3 -m http.server 8000
@@ -23,15 +23,15 @@ Or enable GitHub Pages for this repository (deploy from branch, root folder)
 and it will be live at your Pages URL.
 
 
-### Two eras (tabs)
+### Eras (tabs)
 
 The atlas has three switchable era tabs at the top of the sidebar:
 
-- **Six Kingdoms Era** (~7,250 BR) — the original six-kingdoms political map.
-- **Empire Era** (~7,160 BR – ~1,852 AR) — the Early Empire through the Golden
+- **Six Kingdoms Era** (~7,250 BR): the original six-kingdoms political map.
+- **Empire Era** (~7,160 BR – ~1,852 AR): the Early Empire through the Golden
   Millennia: the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand
   Duchies, Hikai and Lingia.
-- **Present** (~1,852 AR onward) — the present age: the kingdoms of Lajazer,
+- **Present** (~1,852 AR onward): the present age, home to the kingdoms of Lajazer,
   Civer, Atriki, Tarmet, Berlailia and Ociyaran, plus the sacred-neutral
   island of the Cidet (the holy city Aseri Oshei and the Temple of the Gods,
   Oshei Naos), the Academy and Thult in the west.
@@ -45,8 +45,8 @@ Both eras share the same geography, so the heightmap, precipitation, ocean
 labeled base map, searchable markers with descriptions, distance tracker,
 export, and read-aloud. Edits are saved per era.
 
-The **Six Kingdoms** tab has five map layers — Terrain, Atlas, Heightmap,
-Precipitation, and Kingdom borders — plus a compare-overlay blend. The
+The **Six Kingdoms** tab has five map layers: Terrain, Atlas, Heightmap,
+Precipitation, and Kingdom borders, plus a compare-overlay blend. The
 **Empire** tab shows a single Terrain layer (its own labeled Azgaar SVG
 export), so its map-layer and compare controls are hidden.
 
@@ -54,27 +54,27 @@ export), so its map-layer and compare controls are hidden.
 
 - **Pan & zoom** across the full 7680×3962 px atlas.
 - **Four switchable layers**, aligned to one coordinate space:
-  - *Terrain (default)* — full-opacity elevation render with all labels
-  - *Atlas* — the labeled political/terrain map
-  - *Heightmap* — unlabeled elevation render
-  - *Precipitation* — rainfall map (blue dots mark how much rain each area gets)
-- **Compare mode** — blend a second layer over the base with an opacity slider.
-- **~425 searchable places** — the six kingdoms and their capitals, regions,
+  - *Terrain (default)*: full-opacity elevation render with all labels
+  - *Atlas*: the labeled political/terrain map
+  - *Heightmap*: unlabeled elevation render
+  - *Precipitation*: rainfall map (blue dots mark how much rain each area gets)
+- **Compare mode**: blend a second layer over the base with an opacity slider.
+- **~425 searchable places**: the six kingdoms and their capitals, regions,
   cities & ports, towns, seas & lakes, rivers, islands, forests, sacred
   territories, and landmarks, each with a marker, tooltip and popup. Names and
   descriptions cross-checked against the world canon document; every place
   lists its kingdom and nearest neighbours. Town markers declutter
   automatically at low zoom.
-- **Distance tracker** — pick any two places in the sidebar to get the
+- **Distance tracker**: pick any two places in the sidebar to get the
   straight-line distance in miles plus rough travel times on foot / mounted.
-- **Document export** — build a gazetteer document from the map (like
+- **Document export**: build a gazetteer document from the map (like
   Azgaar's export settings): toggle the full map image, kingdoms & regions,
   cities & towns, seas/lakes/rivers, islands & forests, sacred territories &
   landmarks, and per-kingdom biomes; output as a web page, Markdown, or
   plain text.
 - **Click anywhere** on any layer to see the nearest named place and its
   distance in miles.
-- **Edit mode** — edit any place's name, category and description; drag
+- **Edit mode**: edit any place's name, category and description; drag
   markers to reposition them; click empty map to add new places; delete
   places; edit the site title and About text. Edits persist in your browser
   (localStorage) and can be exported as a ready-to-commit `places.js` with

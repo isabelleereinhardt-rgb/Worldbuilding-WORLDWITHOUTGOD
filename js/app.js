@@ -1,4 +1,4 @@
-/* Map of the World — interactive atlas app */
+/* Map of the World: interactive atlas app */
 (function () {
   "use strict";
 
@@ -19,7 +19,7 @@
   var WORLDS = {
     six: {
       id: "six", label: "Six Kingdoms Era",
-      textDefaults: { title: "Map of the World", subtitle: "The Six Kingdoms \u2014 7,250 BR",
+      textDefaults: { title: "Map of the World", subtitle: "The Six Kingdoms: 7,250 BR",
         about1: "A map of the six kingdoms of the world, as they stood in 7,250 BR." },
       places: (typeof PLACES !== "undefined") ? PLACES : [],
       states: (typeof KINGDOMS !== "undefined") ? KINGDOMS : [],
@@ -35,7 +35,7 @@
     empire: {
       id: "empire", label: "Empire Era",
       textDefaults: { title: "Map of the World", subtitle: "The Early Empire \u2192 the Golden Millennia",
-        about1: "A map of the world from the Early Empire through the Golden Millennia \u2014 the age of the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand Duchies, Hikai and Lingia (~7160 BR \u2013 ~1852 AR)." },
+        about1: "A map of the world from the Early Empire through the Golden Millennia: the age of the Caporiolan Kingdom, Theolisseia, the Uxridian and Tanan Grand Duchies, Hikai and Lingia (~7160 BR \u2013 ~1852 AR)." },
       places: (typeof PLACES_EMPIRE !== "undefined") ? PLACES_EMPIRE : [],
       states: (typeof EMPIRE_STATES !== "undefined") ? EMPIRE_STATES : [],
       defaultLayer: "terrain",
@@ -46,7 +46,7 @@
     present: {
       id: "present", label: "Present",
       textDefaults: { title: "Map of the World", subtitle: "The Present Age",
-        about1: "A map of the world in the present age (~1,852 AR onward) — the six kingdoms of Lajazer, Civer, Atriki, Tarmet, Berlailia and Ociyaran, with the sacred island of the Cidet, the Academy and Thult in the west." },
+        about1: "A map of the world in the present age (~1,852 AR onward): the six kingdoms of Lajazer, Civer, Atriki, Tarmet, Berlailia and Ociyaran, with the sacred island of the Cidet, the Academy and Thult in the west." },
       places: (typeof PLACES_PRESENT !== "undefined") ? PLACES_PRESENT : [],
       states: (typeof PRESENT_STATES !== "undefined") ? PRESENT_STATES : [],
       defaultLayer: "terrain",
@@ -772,7 +772,7 @@
       return null;
     }
     return {
-      // returns {viable, embarkMi, seaMi} — seaMi filled only when routing both
+      // returns {viable, embarkMi, seaMi}; seaMi filled only when routing both
       reachable: function (p) {
         if (p.cat === "island") return { viable: true, e: embark(p.x, p.y) };
         var e = embark(p.x, p.y);
@@ -811,7 +811,7 @@
     for (i = 0; i < all.length; i++) {
       if (dispName(all[i], counts).toLowerCase() === t) return all[i];
     }
-    // exact plain name — return first match
+    // exact plain name: return first match
     for (i = 0; i < all.length; i++) {
       if (all[i].n.toLowerCase() === t) return all[i];
     }
@@ -1060,7 +1060,7 @@
   }
 
   function docTitle() { return texts.title || "Map of the World"; }
-  function docSubtitle() { return texts.subtitle || "The Six Kingdoms — 7,250 BR"; }
+  function docSubtitle() { return texts.subtitle || "The Six Kingdoms: 7,250 BR"; }
 
   function buildHtmlDoc(data, mapDataUrl) {
     var h = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>" + esc(docTitle()) +
@@ -1081,7 +1081,7 @@
       g.sections.forEach(function (sec) {
         h += "<h3>" + esc(sec.label) + "</h3><ul>";
         sec.rows.forEach(function (p) {
-          h += "<li><b>" + esc(p.n) + "</b>" + (p.d ? " — " + esc(p.d) : "") + "</li>";
+          h += "<li><b>" + esc(p.n) + "</b>" + (p.d ? ": " + esc(p.d) : "") + "</li>";
         });
         h += "</ul>";
       });
@@ -1107,7 +1107,7 @@
       g.sections.forEach(function (sec) {
         L.push(H3 + sec.label);
         sec.rows.forEach(function (p) {
-          L.push((md ? "- **" + p.n + "**" : "* " + p.n) + (p.d ? " — " + p.d : ""));
+          L.push((md ? "- **" + p.n + "**" : "* " + p.n) + (p.d ? ": " + p.d : ""));
         });
         L.push("");
       });
