@@ -40,11 +40,7 @@
       states: (typeof EMPIRE_STATES !== "undefined") ? EMPIRE_STATES : [],
       defaultLayer: "terrain",
       layers: [
-        { id: "terrain", label: "Terrain (default)", src: "assets/empire.jpg", bounds: atlasBounds },
-        { id: "atlas", label: "Atlas", src: "assets/empire_atlas.jpg", bounds: atlasBounds },
-        { id: "height", label: "Heightmap", src: "assets/height.jpg", bounds: atlasBounds },
-        { id: "precipitation", label: "Precipitation", src: "assets/precipitation.jpg", bounds: popBounds },
-        { id: "borders", label: "Kingdom borders", src: "assets/empire_borders.jpg", bounds: atlasBounds }
+        { id: "terrain", label: "Terrain (default)", src: "assets/empire.jpg", bounds: atlasBounds }
       ]
     }
   };
@@ -323,6 +319,9 @@
   var cmpActive = null;
 
   function buildLayerControls() {
+    // A single-layer era has nothing to switch or compare, so hide the panel.
+    var layerPanel = baseBox.closest(".panel");
+    if (layerPanel) layerPanel.style.display = active.layers.length > 1 ? "" : "none";
     baseBox.innerHTML = "";
     active.layers.forEach(function (l) {
       var lab = document.createElement("label");
@@ -357,7 +356,7 @@
     cmpActive = null;
     if (!cmpOn.checked) return;
     var key = cmpSel.value;
-    if (key === currentBase) return;
+    if (!key || key === currentBase || !layers[key]) return;
     cmpActive = layers[key];
     cmpActive.setOpacity(cmpOpacity.value / 100);
     cmpActive.addTo(map);

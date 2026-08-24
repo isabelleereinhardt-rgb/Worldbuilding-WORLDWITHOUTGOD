@@ -39,11 +39,10 @@ Both eras share the same geography, so the heightmap, precipitation, ocean
 labeled base map, searchable markers with descriptions, distance tracker,
 export, and read-aloud. Edits are saved per era.
 
-Each tab carries the **same five map layers** — Terrain, Atlas, Heightmap,
-Precipitation, and Kingdom borders. The Empire tab's Terrain, Atlas and
-Kingdom-borders layers are rendered from its own Azgaar SVG export (so they
-show the Empire-era states and labels), while the Heightmap and Precipitation
-layers are shared with the Six Kingdoms tab, since the land itself is unchanged.
+The **Six Kingdoms** tab has five map layers — Terrain, Atlas, Heightmap,
+Precipitation, and Kingdom borders — plus a compare-overlay blend. The
+**Empire** tab shows a single Terrain layer (its own labeled Azgaar SVG
+export), so its map-layer and compare controls are hidden.
 
 ### Features
 
