@@ -45,7 +45,7 @@
     },
     present: {
       id: "present", label: "Present",
-      textDefaults: { title: "Map of the World", subtitle: "The Present Age",
+      textDefaults: { title: "Map of the World", subtitle: "The Present Age: ~1,852 AR onward",
         about1: "A map of the world in the present age (~1,852 AR onward): the six kingdoms of Lajazer, Civer, Atriki, Tarmet, Berlailia and Ociyaran, with the sacred island of the Cidet, the Academy and Thult in the west." },
       places: (typeof PLACES_PRESENT !== "undefined") ? PLACES_PRESENT : [],
       states: (typeof PRESENT_STATES !== "undefined") ? PRESENT_STATES : [],
@@ -837,7 +837,7 @@
       var who = [];
       if (!ra.viable) who.push(esc(dispName(pa)));
       if (!rb.viable) who.push(esc(dispName(pb)));
-      return '<br><span class="sea-no">⚓ Not reachable by ship &mdash; ' +
+      return '<br><span class="sea-no">⚓ Not reachable by ship; ' +
         who.join(" and ") + (who.length > 1 ? " are landlocked." : " is landlocked.") + "</span>";
     }
     var seaMi = SEA.route(ra.e, rb.e);
@@ -877,7 +877,7 @@
     [["From", a], ["To", b]].forEach(function (row) {
       var label = row[0], st = row[1];
       if (st.state === "ok") msgs.push(label + ": &#10003; " + esc(st.place.n));
-      else if (st.state === "bad") msgs.push(label + ": no place called &ldquo;" + esc(st.raw) + "&rdquo; &mdash; keep typing or pick from the list");
+      else if (st.state === "bad") msgs.push(label + ": no place called &ldquo;" + esc(st.raw) + "&rdquo;; keep typing or pick from the list");
       else msgs.push(label + ": type or pick a place");
     });
     distOut.innerHTML = msgs.join("<br>");
