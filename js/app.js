@@ -90,7 +90,7 @@
       var id = "p" + i;
       var e = edits[id];
       if (e && e.deleted) return;
-      var q = { id: id, n: p.n, cat: p.cat, x: p.x, y: p.y, d: p.d, k: p.k };
+      var q = { id: id, n: p.n, cat: p.cat, x: p.x, y: p.y, d: p.d, k: p.k, alt: p.alt };
       if (e) {
         ["n", "cat", "x", "y", "d", "k"].forEach(function (k) {
           if (e[k] !== undefined) q[k] = e[k];
@@ -388,7 +388,8 @@
     q = q.toLowerCase();
     var counts = nameCountMap();
     var hits = mergedPlaces().filter(function (p) {
-      return p.n.toLowerCase().indexOf(q) !== -1;
+      if (p.n.toLowerCase().indexOf(q) !== -1) return true;
+      return !!(p.alt && p.alt.toLowerCase().indexOf(q) !== -1);
     }).slice(0, 30);
     hits.forEach(function (p) {
       var li = document.createElement("li");
@@ -632,6 +633,7 @@
         '", x: ' + Math.round(p.x) + ", y: " + Math.round(p.y);
       if (p.k) s += ", k: " + JSON.stringify(p.k);
       if (p.d) s += ", d: " + JSON.stringify(p.d);
+      if (p.alt) s += ", alt: " + JSON.stringify(p.alt);
       return s + " }";
     });
     var biomes = BIOMES.map(function (b) {
