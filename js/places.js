@@ -427,12 +427,12 @@ const PLACES = [
   { n: "Aslwal", cat: "town", x: 6184, y: 1686, k: "Equateiy", d: "In the Kingdom of Equateiy, about 475 mi southwest of Ociyaran, near Uada and Esteraia. A smaller town inside Uada. (Approximate placement.)" },
   { n: "Esteraia", cat: "town", x: 6155, y: 1685, k: "Equateiy", d: "In the Kingdom of Equateiy, about 500 mi southwest of Ociyaran, near Uada and Aslwal. A smaller town inside Uada. (Approximate placement.)" },
   { n: "Loedesca", cat: "river", x: 2370, y: 2210, k: "Aicruae", d: "In the Kingdom of Aicruae, about 350 mi south of Lajazer, near Caesro and The Santie. River of southeastern Aicruae, near the southern Pireaynea border." },
-  { n: "The Demon's Pit", cat: "landmark", x: 2654, y: 2164, k: "Aicruae", d: "In the Kingdom of Aicruae, about 450 mi southeast of Lajazer, near Benalo and Oahiat. Canon name for the Aicruae-Pireaynea border. (Approximate placement.)" },
+  { n: "The Demon's Pit", cat: "landmark", x: 3080, y: 2300, k: "Pireaynea", d: "The epithet of the kingdom of Pireaynea itself: a land of warlords and banditry so lawless it earned the name 'the Demon's Pit.'" },
 ];
 
 const KINGDOMS = [
   { n: "Aicruae", capital: "Lajazer", d: "Westernmost of the six kingdoms of the pre-Empire era.", biomes: ["Grassland", "Cold desert (dry interior)", "Temperate deciduous forest", "Temperate rainforest (west coast)"] },
-  { n: "Pireaynea", capital: "Civer", d: "South-central kingdom directly east of Aicruae, across the Demon's Pit.", biomes: ["Grassland", "Savanna", "Tropical seasonal forest (Fetora coast)", "Wetland (river lowlands)"] },
+  { n: "Pireaynea", capital: "Civer", d: "South-central kingdom directly east of Aicruae; nicknamed the 'Demon's Pit' for its warlord anarchy.", biomes: ["Grassland", "Savanna", "Tropical seasonal forest (Fetora coast)", "Wetland (river lowlands)"] },
   { n: "Gherci", capital: "Tarmet", d: "Largest and most central kingdom of the pre-Empire era.", biomes: ["Grassland", "Savanna (dry central plains)", "Temperate deciduous forest", "Wetland (Honlo shores)"] },
   { n: "Coelum", capital: "Atriki", d: "The northern 'Forsaken Land'.", biomes: ["Taiga", "Tundra (far north)", "Temperate deciduous forest", "Grassland"] },
   { n: "Equateiy", capital: "Ociyaran", d: "Highland kingdom of the northeast.", biomes: ["Grassland", "Temperate deciduous forest", "Temperate rainforest (Oberya cliffs)", "Taiga (highlands)"] },
